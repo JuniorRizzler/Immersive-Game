@@ -480,12 +480,12 @@ bkcore.hexgl.tracks.Cityscape = {
 			blending: THREE.AdditiveBlending,
 			depthWrite: false
 		});
-		var coreGeometry = new THREE.SphereGeometry(78, 18, 12);
-		var coreShellGeometry = new THREE.SphereGeometry(128, 18, 12);
+		var coreGeometry = new THREE.SphereGeometry(20, 14, 10);
+		var coreShellGeometry = new THREE.SphereGeometry(36, 14, 10);
 		var corePositions = [
-			new THREE.Vector3(-2246, 432, -455),
-			new THREE.Vector3(-2246, 432, -185),
-			new THREE.Vector3(-2246, 432, 95)
+			new THREE.Vector3(-2265, 430, -540),
+			new THREE.Vector3(-2133, 430, -70),
+			new THREE.Vector3(-2156, 430, 1248)
 		];
 		var cores = [];
 		for(var i = 0; i < corePositions.length; i++)
@@ -494,11 +494,11 @@ bkcore.hexgl.tracks.Cityscape = {
 			core.position.copy(corePositions[i]);
 			core.baseY = corePositions[i].y;
 			core.collected = false;
-			core.radius = 260;
+			core.radius = 135;
 
 			core.inner = new THREE.Mesh(coreGeometry, coreMaterial);
 			core.shell = new THREE.Mesh(coreShellGeometry, coreShellMaterial);
-			core.light = new THREE.PointLight(0x45dfff, 4.5, 720);
+			core.light = new THREE.PointLight(0x45dfff, 1.8, 280);
 
 			core.add(core.inner);
 			core.add(core.shell);
