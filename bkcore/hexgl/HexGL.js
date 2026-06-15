@@ -197,6 +197,7 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 		var rank = "FAILED";
 		var resultTitle = "Contract Failed";
 		var nextTarget = "Stabilize the ship, protect the cargo, and try again.";
+		var storyResult = "The pulse cores never reached the relays. The city grid overheated, the lower districts went dark, and the skyline cooked in its own power surge.";
 
 		if(this.gameplay.result == this.gameplay.results.FINISH)
 		{
@@ -204,16 +205,19 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 			if(f < 125000 && crashes <= 2)
 			{
 				rank = "S-RANK COURIER";
+				storyResult = "Perfect delivery. The three cores locked into the relays before the blackout wave hit, and the city stayed alive.";
 				nextTarget = "Elite clear. Next goal: beat 2'05'' with two crashes or fewer.";
 			}
 			else if(f < 150000 && crashes <= 5)
 			{
 				rank = "A-RANK RUNNER";
+				storyResult = "The cores arrived in time, but the grid took damage. Half the city flickered, then stabilized on emergency power.";
 				nextTarget = "Clean delivery. Next goal: reach S-Rank under 2'05''.";
 			}
 			else
 			{
 				rank = "CONTRACT CLEARED";
+				storyResult = "You saved the city, barely. The relays came online seconds before the lower grid melted down.";
 				nextTarget = "Next goal: reduce crashes and finish under 2'30''.";
 			}
 		}
@@ -221,7 +225,7 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 		this.gameover.style.display = "block";
 		this.document.getElementById("time").innerHTML = this.gameplay.result == this.gameplay.results.FINISH ? tf.m + "'" + tf.s + "''" + tf.ms : "Cargo Lost";
 		this.document.getElementById("result-title").innerHTML = resultTitle;
-		this.document.getElementById("contract-summary").innerHTML = "Pulse cores delivered: " + delivered + "/" + total + " &middot; Hull impacts: " + crashes;
+		this.document.getElementById("contract-summary").innerHTML = storyResult + "<br>Pulse cores delivered: " + delivered + "/" + total + " &middot; Hull impacts: " + crashes;
 		this.document.getElementById("rank-summary").innerHTML = rank + "<br>" + nextTarget;
 		this.containers.main.parentElement.style.display = "none";
 		return;

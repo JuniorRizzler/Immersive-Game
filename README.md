@@ -15,7 +15,7 @@ Original project: https://github.com/BKcore/HexGL
   - The player is delivering three pulse cores through a failing city grid.
   - Three checkpoint cores can be collected during one route instead of requiring three long laps.
   - The HUD tracks `CORES 0/3` progress.
-  - The finish screen now gives a contract result, delivered core count, crash count, rank, and next target.
+  - The finish screen now gives a story consequence, contract result, delivered core count, crash count, rank, and next target.
 - Added an overdrive mechanic:
   - Drift with `Q`/`A` or `E`/`D` while moving to charge overdrive.
   - Hold `Space` or `Shift` to spend overdrive for a temporary speed surge.
