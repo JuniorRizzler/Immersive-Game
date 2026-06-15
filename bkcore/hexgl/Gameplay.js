@@ -49,7 +49,8 @@ bkcore.hexgl.Gameplay = function(opts)
 	this.maxLaps = 3;
 	this.contract = {
 		delivered: 0,
-		total: 3
+		total: 3,
+		collected: {}
 	};
 	this.score = null;
 	this.finishTime = null;
@@ -64,36 +65,28 @@ bkcore.hexgl.Gameplay = function(opts)
 		self.hud != null && self.hud.updateTime(self.timer.getElapsedTime());
 		var cp = self.checkPoint();
 
-		if(cp == self.track.checkpoints.start && self.previousCheckPoint == self.track.checkpoints.last)
+		if(cp != -1 && cp != self.previousCheckPoint)
 		{
 			self.previousCheckPoint = cp;
-			var t = self.timer.time.elapsed;
-			self.lapTimes.push(t - self.lapTimeElapsed);
-			self.lapTimeElapsed = t;
 
-			if(self.lap == this.maxLaps)
+			if(!self.contract.collected[cp])
 			{
-				self.contract.delivered = self.contract.total;
+				self.contract.collected[cp] = true;
+				self.contract.delivered++;
 				self.hud != null && self.hud.updateObjective(self.contract.delivered, self.contract.total);
-				self.hud != null && self.hud.display("Final core delivered", 0.7);
-				self.end(self.results.FINISH);
-			}
-			else
-			{
-				self.contract.delivered = self.lap;
-				self.lap++;
-				self.hud != null && self.hud.updateLap(self.lap, self.maxLaps);
-				self.hud != null && self.hud.updateObjective(self.contract.delivered, self.contract.total);
-				self.hud != null && self.hud.display("Core " + self.contract.delivered + " delivered", 0.7);
 
-				if(self.lap == self.maxLaps)
-					self.hud != null && self.hud.display("Final core", 0.5);
+				if(self.contract.delivered >= self.contract.total)
+				{
+					var t = self.timer.time.elapsed;
+					self.lapTimes.push(t);
+					self.hud != null && self.hud.display("All cores secured", 0.7);
+					self.end(self.results.FINISH);
+				}
+				else
+				{
+					self.hud != null && self.hud.display("Core " + self.contract.delivered + " secured", 0.7);
+				}
 			}
-		}
-		else if(cp != -1 && cp != self.previousCheckPoint)
-		{
-			self.previousCheckPoint = cp;
-			//self.hud.display("Checkpoint", 0.5);
 		}
 
 		if(self.shipControls.destroyed == true)
@@ -129,6 +122,7 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 	this.score = null;
 	this.lap = 1;
 	this.contract.delivered = 0;
+	this.contract.collected = {};
 
 	this.shipControls.reset(this.track.spawn, this.track.spawnRotation);
 	this.shipControls.active = false;
@@ -162,7 +156,7 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 	{
 		this.hud.resetTime();
 		this.hud.display("Contract uploaded", 1);
-		this.hud.updateLap(this.lap, this.maxLaps);
+		this.hud.updateLap(1, 1);
 		this.hud.updateObjective(this.contract.delivered, this.contract.total);
 	}
 }

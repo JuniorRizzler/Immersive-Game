@@ -115,6 +115,14 @@ html, body {
     0 10px 0 rgba(0, 0, 0, 0.16);
 }
 
+.byline {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1.3em;
+  line-height: 1;
+  text-shadow: 0 0 14px rgba(0,0,0,0.7);
+}
+
 .tagline {
   max-width: 720px;
   margin-top: 18px;

@@ -13,7 +13,7 @@ Original project: https://github.com/BKcore/HexGL
 - Removed the original Google Analytics snippet and remote favicon metadata.
 - Added a courier-contract story mode:
   - The player is delivering three pulse cores through a failing city grid.
-  - Each completed lap delivers one core.
+  - Three checkpoint cores can be collected during one route instead of requiring three long laps.
   - The HUD tracks `CORES 0/3` progress.
   - The finish screen now gives a contract result, delivered core count, crash count, rank, and next target.
 - Added an overdrive mechanic:

@@ -184,9 +184,9 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 
 	var tf = bkcore.Timer.msToTimeString(f);
 	var tl = [
-		bkcore.Timer.msToTimeString(l[0]),
-		bkcore.Timer.msToTimeString(l[1]),
-		bkcore.Timer.msToTimeString(l[2])
+		l[0] != undefined ? bkcore.Timer.msToTimeString(l[0]) : {},
+		l[1] != undefined ? bkcore.Timer.msToTimeString(l[1]) : {},
+		l[2] != undefined ? bkcore.Timer.msToTimeString(l[2]) : {}
 	];
 
 	if(this.gameover !== null)
