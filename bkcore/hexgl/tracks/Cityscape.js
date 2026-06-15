@@ -467,13 +467,21 @@ bkcore.hexgl.tracks.Cityscape = {
 		// COURIER CONTRACT CORES
 		var coreMaterial = new THREE.MeshBasicMaterial({
 			color: 0x45dfff,
+			transparent: true,
+			opacity: 0.78,
+			blending: THREE.AdditiveBlending,
+			depthWrite: false
+		});
+		var coreShellMaterial = new THREE.MeshBasicMaterial({
+			color: 0x45dfff,
 			wireframe: true
 		});
-		var coreGeometry = new THREE.SphereGeometry(12, 10, 8);
+		var coreGeometry = new THREE.SphereGeometry(14, 10, 8);
+		var coreShellGeometry = new THREE.SphereGeometry(22, 10, 8);
 		var corePositions = [
-			new THREE.Vector3(-2265, 412, -540),
-			new THREE.Vector3(-2133, 412, -70),
-			new THREE.Vector3(-2156, 412, 1248)
+			new THREE.Vector3(-2265, 415, -540),
+			new THREE.Vector3(1506, 781, 608),
+			new THREE.Vector3(2253, 354, 823)
 		];
 		var cores = [];
 		for(var i = 0; i < corePositions.length; i++)
@@ -485,8 +493,10 @@ bkcore.hexgl.tracks.Cityscape = {
 			core.radius = 120;
 
 			core.inner = new THREE.Mesh(coreGeometry, coreMaterial);
+			core.shell = new THREE.Mesh(coreShellGeometry, coreShellMaterial);
 
 			core.add(core.inner);
+			core.add(core.shell);
 			scene.add(core);
 			cores.push(core);
 		}
