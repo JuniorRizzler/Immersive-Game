@@ -467,25 +467,13 @@ bkcore.hexgl.tracks.Cityscape = {
 		// COURIER CONTRACT CORES
 		var coreMaterial = new THREE.MeshBasicMaterial({
 			color: 0x45dfff,
-			transparent: true,
-			opacity: 0.92,
-			blending: THREE.AdditiveBlending,
-			depthWrite: false
+			wireframe: true
 		});
-		var coreShellMaterial = new THREE.MeshBasicMaterial({
-			color: 0x8ff6ff,
-			wireframe: true,
-			transparent: true,
-			opacity: 0.32,
-			blending: THREE.AdditiveBlending,
-			depthWrite: false
-		});
-		var coreGeometry = new THREE.SphereGeometry(20, 14, 10);
-		var coreShellGeometry = new THREE.SphereGeometry(36, 14, 10);
+		var coreGeometry = new THREE.SphereGeometry(12, 10, 8);
 		var corePositions = [
-			new THREE.Vector3(-2265, 430, -540),
-			new THREE.Vector3(-2133, 430, -70),
-			new THREE.Vector3(-2156, 430, 1248)
+			new THREE.Vector3(-2265, 412, -540),
+			new THREE.Vector3(-2133, 412, -70),
+			new THREE.Vector3(-2156, 412, 1248)
 		];
 		var cores = [];
 		for(var i = 0; i < corePositions.length; i++)
@@ -494,15 +482,11 @@ bkcore.hexgl.tracks.Cityscape = {
 			core.position.copy(corePositions[i]);
 			core.baseY = corePositions[i].y;
 			core.collected = false;
-			core.radius = 135;
+			core.radius = 120;
 
 			core.inner = new THREE.Mesh(coreGeometry, coreMaterial);
-			core.shell = new THREE.Mesh(coreShellGeometry, coreShellMaterial);
-			core.light = new THREE.PointLight(0x45dfff, 1.8, 280);
 
 			core.add(core.inner);
-			core.add(core.shell);
-			core.add(core.light);
 			scene.add(core);
 			cores.push(core);
 		}
@@ -529,7 +513,7 @@ bkcore.hexgl.tracks.Cityscape = {
 
 			this.objects.components.shipEffects.update(dt);
 
-			this.objects.components.cameraChase.update(dt, this.objects.components.shipControls.getCameraSpeedRatio());
+			this.objects.components.cameraChase.update(dt, this.objects.components.shipControls.getSpeedRatio());
 			this.objects.time += 0.002 * dt;
 
 			var cores = this.objects.components.cores;
@@ -540,7 +524,7 @@ bkcore.hexgl.tracks.Cityscape = {
 					if(!cores[i].collected)
 					{
 						var pulse = 1.0 + Math.sin(this.objects.time * 4.0 + i) * 0.12;
-						cores[i].position.y = cores[i].baseY + Math.sin(this.objects.time * 2.2 + i) * 24;
+						cores[i].position.y = cores[i].baseY + Math.sin(this.objects.time * 2.2 + i) * 8;
 						cores[i].rotation.y += 0.025 * dt;
 						cores[i].rotation.x += 0.012 * dt;
 						cores[i].scale.set(pulse, pulse, pulse);

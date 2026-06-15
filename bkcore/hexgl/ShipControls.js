@@ -833,11 +833,6 @@ bkcore.hexgl.ShipControls.prototype.getBoostRatio = function()
 	return this.boost / this.boosterSpeed;
 };
 
-bkcore.hexgl.ShipControls.prototype.getCameraSpeedRatio = function()
-{
-	return Math.min(1.55, this.getSpeedRatio() + (this.overdriveActive ? 0.35 : 0.0));
-};
-
 bkcore.hexgl.ShipControls.prototype.getShieldRatio = function()
 {
 	return this.shield / this.maxShield;
