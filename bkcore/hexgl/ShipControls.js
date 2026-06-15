@@ -29,12 +29,12 @@ bkcore.hexgl.ShipControls = function(ctx)
 	this.maxSpeed = 7.0;
 	this.boosterSpeed = this.maxSpeed * 0.2;
 	this.boosterDecay = 0.01;
-	this.overdrive = 0.35;
+	this.overdrive = 0.5;
 	this.overdriveMax = 1.0;
 	this.overdriveActive = false;
-	this.overdriveChargeRate = 0.0038;
-	this.overdriveDrainRate = 0.012;
-	this.overdriveSpeed = this.maxSpeed * 0.46;
+	this.overdriveChargeRate = 0.0075;
+	this.overdriveDrainRate = 0.007;
+	this.overdriveSpeed = this.maxSpeed * 1.15;
 	this.angularSpeed = 0.005;
 	this.airAngularSpeed = 0.0065;
 	this.repulsionRatio = 0.5;
@@ -58,6 +58,7 @@ bkcore.hexgl.ShipControls = function(ctx)
 	this.speedRatio = 0.0;
 	this.boost = 0.0;
 	this.shield = 1.0;
+	this.crashCount = 0;
 	this.angular = 0.0;
 
 	this.currentVelocity = new THREE.Vector3();
@@ -323,9 +324,10 @@ bkcore.hexgl.ShipControls.prototype.reset = function(position, rotation)
 	this.speed = 0.0;
 	this.speedRatio = 0.0;
 	this.boost = 0.0;
-	this.overdrive = 0.35;
+	this.overdrive = 0.5;
 	this.overdriveActive = false;
 	this.shield = this.maxShield;
+	this.crashCount = 0;
 	this.destroyed = false;
 
 	this.dummy.position.copy(position);
@@ -675,6 +677,7 @@ bkcore.hexgl.ShipControls.prototype.collisionCheck = function(dt)
 	if(collision.r < 255)
 	{
 		bkcore.Audio.play('crash');
+		this.crashCount++;
 
 		// Shield
 		var sr = (this.getRealSpeed() / this.maxSpeed);

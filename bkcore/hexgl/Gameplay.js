@@ -47,6 +47,10 @@ bkcore.hexgl.Gameplay = function(opts)
 	this.lapTimes = [];
 	this.lapTimeElapsed = 0;
 	this.maxLaps = 3;
+	this.contract = {
+		delivered: 0,
+		total: 3
+	};
 	this.score = null;
 	this.finishTime = null;
 	this.onFinish = opts.onFinish == undefined ? function(){console.log("FINISH");} : opts.onFinish;
@@ -69,15 +73,21 @@ bkcore.hexgl.Gameplay = function(opts)
 
 			if(self.lap == this.maxLaps)
 			{
+				self.contract.delivered = self.contract.total;
+				self.hud != null && self.hud.updateObjective(self.contract.delivered, self.contract.total);
+				self.hud != null && self.hud.display("Final core delivered", 0.7);
 				self.end(self.results.FINISH);
 			}
 			else
 			{
+				self.contract.delivered = self.lap;
 				self.lap++;
 				self.hud != null && self.hud.updateLap(self.lap, self.maxLaps);
+				self.hud != null && self.hud.updateObjective(self.contract.delivered, self.contract.total);
+				self.hud != null && self.hud.display("Core " + self.contract.delivered + " delivered", 0.7);
 
 				if(self.lap == self.maxLaps)
-					self.hud != null && self.hud.display("Final lap", 0.5);
+					self.hud != null && self.hud.display("Final core", 0.5);
 			}
 		}
 		else if(cp != -1 && cp != self.previousCheckPoint)
@@ -118,6 +128,7 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 	this.finishTime = null;
 	this.score = null;
 	this.lap = 1;
+	this.contract.delivered = 0;
 
 	this.shipControls.reset(this.track.spawn, this.track.spawnRotation);
 	this.shipControls.active = false;
@@ -150,8 +161,9 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 	if(this.hud != null)
 	{
 		this.hud.resetTime();
-		this.hud.display("Get ready", 1);
+		this.hud.display("Contract uploaded", 1);
 		this.hud.updateLap(this.lap, this.maxLaps);
+		this.hud.updateObjective(this.contract.delivered, this.contract.total);
 	}
 }
 
@@ -166,7 +178,7 @@ bkcore.hexgl.Gameplay.prototype.end = function(result)
 
 	if(result == this.results.FINISH)
 	{
-		if(this.hud != null) this.hud.display("Finish");
+		if(this.hud != null) this.hud.display("Contract complete");
 		this.step = 100;
 	}
 	else if(result == this.results.DESTROYED)

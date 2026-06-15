@@ -67,6 +67,7 @@ bkcore.hexgl.HUD = function(opts)
 	this.lapMarginRatio = 14;
 	this.lap = "";
 	this.lapSeparator = "/";
+	this.objective = "CORES 0/3";
 
 	this.timeSeparators = ["","'", "''",""];
 
@@ -103,6 +104,11 @@ bkcore.hexgl.HUD.prototype.display = function(msg, duration)
 bkcore.hexgl.HUD.prototype.updateLap = function(current, total)
 {
 	this.lap = current + this.lapSeparator + total;
+}
+
+bkcore.hexgl.HUD.prototype.updateObjective = function(delivered, total)
+{
+	this.objective = "CORES " + delivered + "/" + total;
 }
 
 bkcore.hexgl.HUD.prototype.resetLap = function()
@@ -213,6 +219,13 @@ bkcore.hexgl.HUD.prototype.update = function(speed, speedRatio, shield, shieldRa
 			this.ctx.font = (SCREEN_WIDTH/this.timeFontRatio)+"px "+this.font;
 		    this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
 		    this.ctx.fillText(this.lap, SCREEN_WIDTH-SCREEN_WIDTH/this.lapMarginRatio, SCREEN_WIDTH/this.timeMarginRatio);
+		}
+
+		if(this.objective != "")
+		{
+			this.ctx.font = (SCREEN_WIDTH/32)+"px "+this.font;
+		    this.ctx.fillStyle = "rgba(255, 120, 77, 0.9)";
+		    this.ctx.fillText(this.objective, SCREEN_HW, SCREEN_WIDTH/this.timeMarginRatio + 44);
 		}
 
 		if(!this.messageOnly)

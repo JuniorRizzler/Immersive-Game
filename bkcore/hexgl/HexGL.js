@@ -191,8 +191,38 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 
 	if(this.gameover !== null)
 	{
+		var delivered = this.gameplay.contract != undefined ? this.gameplay.contract.delivered : 0;
+		var total = this.gameplay.contract != undefined ? this.gameplay.contract.total : 3;
+		var crashes = this.components.shipControls.crashCount || 0;
+		var rank = "FAILED";
+		var resultTitle = "Contract Failed";
+		var nextTarget = "Stabilize the ship, protect the cargo, and try again.";
+
+		if(this.gameplay.result == this.gameplay.results.FINISH)
+		{
+			resultTitle = "Contract Complete";
+			if(f < 125000 && crashes <= 2)
+			{
+				rank = "S-RANK COURIER";
+				nextTarget = "Elite clear. Next goal: beat 2'05'' with two crashes or fewer.";
+			}
+			else if(f < 150000 && crashes <= 5)
+			{
+				rank = "A-RANK RUNNER";
+				nextTarget = "Clean delivery. Next goal: reach S-Rank under 2'05''.";
+			}
+			else
+			{
+				rank = "CONTRACT CLEARED";
+				nextTarget = "Next goal: reduce crashes and finish under 2'30''.";
+			}
+		}
+
 		this.gameover.style.display = "block";
-		this.gameover.children[0].innerHTML = tf.m + "'" + tf.s + "''" + tf.ms;
+		this.document.getElementById("time").innerHTML = this.gameplay.result == this.gameplay.results.FINISH ? tf.m + "'" + tf.s + "''" + tf.ms : "Cargo Lost";
+		this.document.getElementById("result-title").innerHTML = resultTitle;
+		this.document.getElementById("contract-summary").innerHTML = "Pulse cores delivered: " + delivered + "/" + total + " &middot; Hull impacts: " + crashes;
+		this.document.getElementById("rank-summary").innerHTML = rank + "<br>" + nextTarget;
 		this.containers.main.parentElement.style.display = "none";
 		return;
 	}
@@ -410,6 +440,7 @@ bkcore.hexgl.HexGL.prototype.tweakShipControls = function()
 		c.airBrake = 0.04;
 		c.maxSpeed = 9.6;
 		c.boosterSpeed = c.maxSpeed * 0.35;
+		c.overdriveSpeed = c.maxSpeed * 1.15;
 		c.boosterDecay = 0.007;
 		c.angularSpeed = 0.0140;
 		c.airAngularSpeed = 0.0165;
@@ -429,6 +460,7 @@ bkcore.hexgl.HexGL.prototype.tweakShipControls = function()
 		c.airBrake = 0.025;
 		c.maxSpeed = 7.0;
 		c.boosterSpeed = c.maxSpeed * 0.5;
+		c.overdriveSpeed = c.maxSpeed * 1.15;
 		c.boosterDecay = 0.007;
 		c.angularSpeed = 0.0125;
 		c.airAngularSpeed = 0.0135;

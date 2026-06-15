@@ -125,6 +125,42 @@ html, body {
   text-shadow: 0 0 18px rgba(0,0,0,0.65);
 }
 
+#briefing {
+  box-sizing: border-box;
+  width: min(760px, calc(100vw - 48px));
+  margin: 10vh auto 0;
+  padding: 28px 34px 30px;
+  border: 1px solid rgba(80, 188, 229, 0.55);
+  background: rgba(0, 12, 22, 0.76);
+  box-shadow: 0 0 28px rgba(80, 188, 229, 0.22), inset 0 0 32px rgba(255, 120, 77, 0.12);
+  text-align: left;
+}
+
+#briefing h2 {
+  margin: 0 0 12px;
+  color: #ff784d;
+  font-size: 2.2em;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+#briefing p,
+#briefing li {
+  font-size: 1.18em;
+  line-height: 1.25;
+}
+
+#briefing ul {
+  margin: 18px 0 24px;
+  padding-left: 28px;
+}
+
+#briefing #ctrl-help {
+  color: #50bce5;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 #menucontainer {
   position: absolute;
   top: auto;
@@ -239,6 +275,21 @@ html, body {
 
 #step-5 #time {
   font-size: 4em
+}
+
+#result-title {
+  color: #ff784d;
+  font-size: 2.2em;
+  text-transform: uppercase;
+}
+
+#contract-summary,
+#rank-summary {
+  max-width: 720px;
+  margin: 12px auto;
+  color: rgba(255,255,255,0.86);
+  font-size: 1.35em;
+  line-height: 1.2;
 }
 
 #leapinfo {
