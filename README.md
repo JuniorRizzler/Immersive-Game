@@ -1,26 +1,47 @@
-HexGL
-=========
+Pulse Rush
+==========
 
-Source code of [HexGL](http://hexgl.bkcore.com), the futuristic HTML5 racing game by [Thibaut Despoulain](http://bkcore.com)
+Pulse Rush is a modified version of HexGL, the futuristic HTML5/WebGL racing game by Thibaut Despoulain.
 
-## Branches
-  * **[Master](https://github.com/BKcore/HexGL)** - Public release (stable).
+Modified by Dean Concepcion.
 
-## License
+Original project: https://github.com/BKcore/HexGL
 
-Unless specified in the file, HexGL's code and resources are now licensed under the *MIT License*.
+## What changed
 
-## Installation
+- Rebranded the playable shell from HexGL to Pulse Rush.
+- Removed the original Google Analytics snippet and remote favicon metadata.
+- Added an overdrive mechanic:
+  - Drift with `Q`/`A` or `E`/`D` while moving to charge overdrive.
+  - Hold `Space` or `Shift` to spend overdrive for a temporary speed surge.
+- Added an overdrive HUD meter.
+- Added an orange vignette pulse while overdrive is active.
+- Updated the credits screen to identify this as a modified version.
 
-	cd ~/
-	git clone git://github.com/BKcore/HexGL.git
-	cd HexGL
-	python -m SimpleHTTPServer
-	chromium index.html
+## Controls
 
-To use full size textures, swap the two textures/ and textures.full/ directories.
+- Arrow Up: accelerate
+- Arrow Left / Arrow Right: steer
+- Q or A: left air brake / drift
+- E or D: right air brake / drift
+- Space or Shift: overdrive
 
-## Note
+## Run locally
 
-The development of HexGL is in a hiatus for now until I find some time and interest to work on it again.
-That said, feel free to post issues, patches, or anything to make the game better and I'll gladly review and merge them.
+From the project directory:
+
+```bash
+python -m http.server 8000
+```
+
+Then open:
+
+```text
+http://localhost:8000
+```
+
+## License and attribution
+
+The original HexGL project is licensed under the MIT License. The original copyright notice is preserved in `LICENSE`.
+
+This version includes modifications for coursework/study. Do not submit it as if the original HexGL code was written from scratch.

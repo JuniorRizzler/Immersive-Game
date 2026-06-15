@@ -1,17 +1,14 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>HexGL by BKcore</title>
+    <title>Pulse Rush</title>
     <meta charset="utf-8">
-    <meta name="description" content="HexGL is a futuristic racing game built by Thibaut Despoulain (BKcore) using HTML5, Javascript and WebGL. Come challenge your friends on this fast-paced 3D game!">
-    <meta property="og:title" content="HexGL, the HTML5 futuristic racing game." />
+    <meta name="description" content="Pulse Rush is a modified futuristic WebGL racing game based on the open-source HexGL project.">
+    <meta property="og:title" content="Pulse Rush, a futuristic WebGL racing game." />
     <meta property="og:type" content="game" />
-    <meta property="og:url" content="http://hexgl.bkcore.com/" />
-    <meta property="og:image" content="http://hexgl.bkcore.com/image.png" />
-    <meta property="og:site_name" content="HexGL by BKcore" />
-    <meta property="fb:admins" content="1482017639" />
-    <link rel="icon" href="http://hexgl.bkcore.com/favicon.png" type="image/png">
-    <link rel="shortcut icon" href="http://hexgl.bkcore.com/favicon.png" type="image/png">
+    <meta property="og:site_name" content="Pulse Rush" />
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="shortcut icon" href="favicon.png" type="image/png">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="css/multi.css" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="css/fonts.css" type="text/css" charset="utf-8">
@@ -29,32 +26,23 @@
         width: 100%;
       }
     </style>
-    <script type="text/javascript">
-    //analytics
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-26274524-4']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-    </script>
   </head>
 
   <body>
     <div id="step-1">
       <div id="global"></div>
       <div id="title">
+        <div class="game-title">Pulse Rush</div>
+        <div class="tagline">Drift to charge overdrive. Burn it on the straight.</div>
       </div>
       <div id="menucontainer">
         <div id="menu">
-          <div id="start">Start</div>
+          <div id="start">Start Run</div>
           <div id="s-controlType">Controls: Keyboard</div>
           <div id="s-quality">Quality: High</div>
           <div id="s-hud">HUD: On</div>
           <div id="s-godmode" style="display: none">Godmode: Off</div>
-          <div id="s-credits">Credits</div>
+          <div id="s-credits">Credits / Attribution</div>
         </div>
       </div>
     </div>
@@ -73,8 +61,12 @@
       <div id="ctrl-help">Click/Touch to continue.</div>
     </div>
     <div id="credits" style="display: none">
-      <h3>Code</h3>
+      <h3>Pulse Rush</h3>
+      <p><b>Made By</b><br>Dean Concepcion</p>
+      <p><b>Modified Version</b><br>New title shell, overdrive gameplay system, HUD meter, and visual tuning.</p>
+      <h3>Original Code</h3>
       <p><b>Concept and Development</b><br>Thibaut Despoulain (BKcore)</p>
+      <p><b>Original Project</b><br>HexGL - https://github.com/BKcore/HexGL<br>Licensed under the MIT License.</p>
       <p><b>Contributors</b><br>townxelliot<br>mahesh.kk</p>
       <p><b>Technologies</b><br>WebGL<br>JavaScript<br>CoffeeScript<br>Three.js<br>LeapMotion</p>
       <h3>Graphics</h3>

@@ -39,6 +39,7 @@ bkcore.hexgl.HUD = function(opts)
 	this.shieldBarHRatio = 14.3;
 	this.timeMarginRatio = 18;
 	this.timeFontRatio = 19.2;
+	this.overdrive = 0.0;
 
 	this.font = opts.font || "Arial";
 
@@ -119,7 +120,7 @@ bkcore.hexgl.HUD.prototype.resetTime = function()
 	this.time = "";
 }
 
-bkcore.hexgl.HUD.prototype.update = function(speed, speedRatio, shield, shieldRatio)
+bkcore.hexgl.HUD.prototype.update = function(speed, speedRatio, shield, shieldRatio, overdriveRatio)
 {
 	var SCREEN_WIDTH = this.width;
 	var SCREEN_HEIGHT = this.height;
@@ -149,6 +150,8 @@ bkcore.hexgl.HUD.prototype.update = function(speed, speedRatio, shield, shieldRa
 	var sho = SCREEN_WIDTH/this.shieldBarHRatio;
 	var sh = sho*shieldRatio;
 	var sy = (SCREEN_WIDTH/this.shieldBarYRatio)+sho-sh;
+	var od = overdriveRatio == undefined ? this.overdrive : overdriveRatio;
+	this.overdrive += (od - this.overdrive) * 0.22;
 	
 
 	if(this.step == 0)
@@ -210,6 +213,25 @@ bkcore.hexgl.HUD.prototype.update = function(speed, speedRatio, shield, shieldRa
 			this.ctx.font = (SCREEN_WIDTH/this.timeFontRatio)+"px "+this.font;
 		    this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
 		    this.ctx.fillText(this.lap, SCREEN_WIDTH-SCREEN_WIDTH/this.lapMarginRatio, SCREEN_WIDTH/this.timeMarginRatio);
+		}
+
+		if(!this.messageOnly)
+		{
+			var meterWidth = Math.min(320, SCREEN_WIDTH * 0.24);
+			var meterHeight = Math.max(6, SCREEN_WIDTH * 0.006);
+			var meterX = SCREEN_WIDTH/this.lapMarginRatio;
+			var meterY = SCREEN_WIDTH/this.timeMarginRatio + 16;
+
+			this.ctx.font = (SCREEN_WIDTH/42)+"px "+this.font;
+		    this.ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+		    this.ctx.textAlign = "left";
+		    this.ctx.fillText("OVERDRIVE " + Math.round(this.overdrive * 100), meterX, meterY - 8);
+
+			this.ctx.fillStyle = "rgba(255, 255, 255, 0.16)";
+			this.ctx.fillRect(meterX, meterY, meterWidth, meterHeight);
+			this.ctx.fillStyle = this.overdrive > 0.98 ? "rgba(255, 120, 77, 0.95)" : "rgba(80, 188, 229, 0.88)";
+			this.ctx.fillRect(meterX, meterY, meterWidth * this.overdrive, meterHeight);
+			this.ctx.textAlign = "center";
 		}
 
 	    // MESSAGE

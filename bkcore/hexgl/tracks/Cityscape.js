@@ -501,9 +501,12 @@ bkcore.hexgl.tracks.Cityscape = {
 				this.objects.components.shipControls.getRealSpeed(100),
 				this.objects.components.shipControls.getRealSpeedRatio(),
 				this.objects.components.shipControls.getShield(100),
-				this.objects.components.shipControls.getShieldRatio()
+				this.objects.components.shipControls.getShieldRatio(),
+				this.objects.components.shipControls.getOverdriveRatio()
 			);
-			if(this.objects.components.shipControls.getShieldRatio() < 0.2)
+			if(this.objects.components.shipControls.overdriveActive)
+				this.objects.extras.vignetteColor.setHex(0xf66439);
+			else if(this.objects.components.shipControls.getShieldRatio() < 0.2)
 				this.objects.extras.vignetteColor.setHex(0x992020);
 			else
 				this.objects.extras.vignetteColor.setHex(0x458ab1);

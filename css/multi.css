@@ -87,12 +87,14 @@ html, body {
   bottom: 5%;
   left: 0;
   z-index: 1;
-  background: url('title.png') no-repeat center top;
-  -moz-background-size: auto 50%;
-  -webkit-background-size: auto 50%;
-  -ms-background-size: auto 50%;
-  -o-background-size: auto 50%;
-  background-size: auto 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 5vh;
+  color: #e8fbff;
+  text-align: center;
+  text-transform: uppercase;
   -webkit-transform: translateZ(0);
   -moz-transform: translateZ(0);
   -o-transform: translateZ(0);
@@ -101,6 +103,26 @@ html, body {
   -moz-animation: anim 3s ease-in-out infinite;
   -o-animation: anim 3s ease-in-out infinite;
   animation: anim 3s ease-in-out infinite;
+}
+
+.game-title {
+  font-size: 7.2em;
+  line-height: 0.82;
+  letter-spacing: 0;
+  text-shadow:
+    0 0 12px rgba(65, 144, 187, 0.95),
+    0 0 34px rgba(246, 100, 57, 0.85),
+    0 10px 0 rgba(0, 0, 0, 0.16);
+}
+
+.tagline {
+  max-width: 720px;
+  margin-top: 18px;
+  padding: 0 24px;
+  color: rgba(255,255,255,0.82);
+  font-size: 1.6em;
+  line-height: 1.15;
+  text-shadow: 0 0 18px rgba(0,0,0,0.65);
 }
 
 #menucontainer {
@@ -122,7 +144,7 @@ html, body {
   font-size: 2em;
   font-family: 'BebasNeueRegular', arial, sans-serif;
   text-transform: uppercase;
-  color: #4190bb;
+  color: #50bce5;
 }
 
 #menu div {
@@ -148,18 +170,18 @@ html, body {
 }
 
 #menu div:hover {
-  color: #f66439;
+  color: #ff784d;
   -webkit-transform: scaleY(1.0);
   transform: scaleY(1.1);
 }
 
 #start {
   font-size: 1.8em;
-  color: #f66439;
+  color: #ff784d;
 }
 
 #start:hover {
-  color: #f8854b !important;
+  color: #ff9b6e !important;
 }
 
 #step-2 {

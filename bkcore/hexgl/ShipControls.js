@@ -29,6 +29,12 @@ bkcore.hexgl.ShipControls = function(ctx)
 	this.maxSpeed = 7.0;
 	this.boosterSpeed = this.maxSpeed * 0.2;
 	this.boosterDecay = 0.01;
+	this.overdrive = 0.35;
+	this.overdriveMax = 1.0;
+	this.overdriveActive = false;
+	this.overdriveChargeRate = 0.0038;
+	this.overdriveDrainRate = 0.012;
+	this.overdriveSpeed = this.maxSpeed * 0.46;
 	this.angularSpeed = 0.005;
 	this.airAngularSpeed = 0.0065;
 	this.repulsionRatio = 0.5;
@@ -109,6 +115,7 @@ bkcore.hexgl.ShipControls = function(ctx)
 		right: false,
 		ltrigger: false,
 		rtrigger: false,
+		boost: false,
 		use: false
 	};
 
@@ -265,6 +272,9 @@ bkcore.hexgl.ShipControls = function(ctx)
 
 			case 68: /*D*/self.key.rtrigger = true; break;
 			case 69: /*E*/self.key.rtrigger = true; break;
+
+			case 16: /*shift*/self.key.boost = true; break;
+			case 32: /*space*/self.key.boost = true; break;
 		}
 	};
 
@@ -285,6 +295,9 @@ bkcore.hexgl.ShipControls = function(ctx)
 
 			case 68: /*D*/self.key.rtrigger = false; break;
 			case 69: /*E*/self.key.rtrigger = false; break;
+
+			case 16: /*shift*/self.key.boost = false; break;
+			case 32: /*space*/self.key.boost = false; break;
 		}
 	};
 
@@ -310,6 +323,8 @@ bkcore.hexgl.ShipControls.prototype.reset = function(position, rotation)
 	this.speed = 0.0;
 	this.speedRatio = 0.0;
 	this.boost = 0.0;
+	this.overdrive = 0.35;
+	this.overdriveActive = false;
 	this.shield = this.maxShield;
 	this.destroyed = false;
 
@@ -438,6 +453,7 @@ bkcore.hexgl.ShipControls.prototype.update = function(dt)
 			if(this.drift > 0.0)
 				this.movement.z -= this.speed * this.drift * dt;
 			rollAmount -= this.rollAngle * 0.7;
+			this.chargeOverdrive(dt);
 		}
 		if(this.key.rtrigger)
 		{
@@ -451,7 +467,11 @@ bkcore.hexgl.ShipControls.prototype.update = function(dt)
 			if(this.drift < 0.0)
 				this.movement.z += this.speed * this.drift * dt;
 			rollAmount += this.rollAngle * 0.7;
+			this.chargeOverdrive(dt);
 		}
+
+		if(this.key.boost && this.overdrive > 0.08)
+			this.overdriveActive = true;
 	}
 
 	this.angular += (angularAmount - this.angular) * this.angularLerp;
@@ -460,6 +480,21 @@ bkcore.hexgl.ShipControls.prototype.update = function(dt)
 	this.speed = Math.max(0.0, Math.min(this.speed, this.maxSpeed));
 	this.speedRatio = this.speed / this.maxSpeed;
 	this.movement.z += this.speed * dt;
+
+	if(this.overdriveActive)
+	{
+		this.overdrive -= this.overdriveDrainRate * dt;
+		if(this.overdrive <= 0.0 || !this.key.boost)
+		{
+			this.overdrive = Math.max(0.0, this.overdrive);
+			this.overdriveActive = false;
+		}
+		else
+		{
+			this.movement.z += this.overdriveSpeed * dt;
+			this.boost = Math.max(this.boost, this.boosterSpeed * 0.65);
+		}
+	}
 
 	if(this.repulsionForce.isZero())
 	{
@@ -604,6 +639,17 @@ bkcore.hexgl.ShipControls.prototype.boosterCheck = function(dt)
 	}
 
 	this.movement.z += this.boost * dt;
+}
+
+bkcore.hexgl.ShipControls.prototype.chargeOverdrive = function(dt)
+{
+	if(!this.active || this.speedRatio < 0.35)
+		return;
+
+	var steeringLoad = 0.45 + Math.min(1.0, Math.abs(this.angular) / this.airAngularSpeed);
+	this.overdrive += this.overdriveChargeRate * steeringLoad * dt;
+	if(this.overdrive > this.overdriveMax)
+		this.overdrive = this.overdriveMax;
 }
 
 bkcore.hexgl.ShipControls.prototype.collisionCheck = function(dt)
@@ -785,6 +831,11 @@ bkcore.hexgl.ShipControls.prototype.getBoostRatio = function()
 bkcore.hexgl.ShipControls.prototype.getShieldRatio = function()
 {
 	return this.shield / this.maxShield;
+};
+
+bkcore.hexgl.ShipControls.prototype.getOverdriveRatio = function()
+{
+	return this.overdrive / this.overdriveMax;
 };
 
 bkcore.hexgl.ShipControls.prototype.getShield = function(scale)
