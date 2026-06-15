@@ -34,7 +34,7 @@ bkcore.hexgl.ShipControls = function(ctx)
 	this.overdriveActive = false;
 	this.overdriveChargeRate = 0.0075;
 	this.overdriveDrainRate = 0.007;
-	this.overdriveSpeed = this.maxSpeed * 1.15;
+	this.overdriveSpeed = this.maxSpeed * 0.38;
 	this.angularSpeed = 0.005;
 	this.airAngularSpeed = 0.0065;
 	this.repulsionRatio = 0.5;
@@ -493,6 +493,8 @@ bkcore.hexgl.ShipControls.prototype.update = function(dt)
 		}
 		else
 		{
+			this.angular *= 0.72;
+			this.drift *= 0.65;
 			this.movement.z += this.overdriveSpeed * dt;
 			this.boost = Math.max(this.boost, this.boosterSpeed * 0.65);
 		}
@@ -829,6 +831,11 @@ bkcore.hexgl.ShipControls.prototype.getSpeedRatio = function()
 bkcore.hexgl.ShipControls.prototype.getBoostRatio = function()
 {
 	return this.boost / this.boosterSpeed;
+};
+
+bkcore.hexgl.ShipControls.prototype.getCameraSpeedRatio = function()
+{
+	return Math.min(1.55, this.getSpeedRatio() + (this.overdriveActive ? 0.35 : 0.0));
 };
 
 bkcore.hexgl.ShipControls.prototype.getShieldRatio = function()

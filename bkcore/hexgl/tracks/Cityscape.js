@@ -464,6 +464,50 @@ bkcore.hexgl.tracks.Cityscape = {
 		var startbanner = ctx.createMesh(scene, this.lib.get("geometries", "track.cityscape.start.banner"), 0, -5, 0, this.materials.startBanner);
 		startbanner.doubleSided = true;
 
+		// COURIER CONTRACT CORES
+		var coreMaterial = new THREE.MeshBasicMaterial({
+			color: 0x45dfff,
+			transparent: true,
+			opacity: 0.92,
+			blending: THREE.AdditiveBlending,
+			depthWrite: false
+		});
+		var coreShellMaterial = new THREE.MeshBasicMaterial({
+			color: 0x8ff6ff,
+			wireframe: true,
+			transparent: true,
+			opacity: 0.32,
+			blending: THREE.AdditiveBlending,
+			depthWrite: false
+		});
+		var coreGeometry = new THREE.SphereGeometry(78, 18, 12);
+		var coreShellGeometry = new THREE.SphereGeometry(128, 18, 12);
+		var corePositions = [
+			new THREE.Vector3(-2246, 432, -455),
+			new THREE.Vector3(-2246, 432, -185),
+			new THREE.Vector3(-2246, 432, 95)
+		];
+		var cores = [];
+		for(var i = 0; i < corePositions.length; i++)
+		{
+			var core = new THREE.Object3D();
+			core.position.copy(corePositions[i]);
+			core.baseY = corePositions[i].y;
+			core.collected = false;
+			core.radius = 260;
+
+			core.inner = new THREE.Mesh(coreGeometry, coreMaterial);
+			core.shell = new THREE.Mesh(coreShellGeometry, coreShellMaterial);
+			core.light = new THREE.PointLight(0x45dfff, 4.5, 720);
+
+			core.add(core.inner);
+			core.add(core.shell);
+			core.add(core.light);
+			scene.add(core);
+			cores.push(core);
+		}
+		ctx.components.cores = cores;
+
 		// CAMERA
 		ctx.components.cameraChase = new bkcore.hexgl.CameraChase({
 			target: ship,
@@ -485,7 +529,24 @@ bkcore.hexgl.tracks.Cityscape = {
 
 			this.objects.components.shipEffects.update(dt);
 
-			this.objects.components.cameraChase.update(dt, this.objects.components.shipControls.getSpeedRatio());
+			this.objects.components.cameraChase.update(dt, this.objects.components.shipControls.getCameraSpeedRatio());
+			this.objects.time += 0.002 * dt;
+
+			var cores = this.objects.components.cores;
+			if(cores != undefined)
+			{
+				for(var i = 0; i < cores.length; i++)
+				{
+					if(!cores[i].collected)
+					{
+						var pulse = 1.0 + Math.sin(this.objects.time * 4.0 + i) * 0.12;
+						cores[i].position.y = cores[i].baseY + Math.sin(this.objects.time * 2.2 + i) * 24;
+						cores[i].rotation.y += 0.025 * dt;
+						cores[i].rotation.x += 0.012 * dt;
+						cores[i].scale.set(pulse, pulse, pulse);
+					}
+				}
+			}
 			/*this.objects.time += 0.002;
 			var c = this.objects.components.cameraChase.camera;
 			c.position.set(

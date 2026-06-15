@@ -162,6 +162,7 @@ bkcore.hexgl.HexGL.prototype.initGameplay = function()
 		hud: this.hud,
 		shipControls: this.components.shipControls,
 		cameraControls: this.components.cameraChase,
+		cores: this.components.cores,
 		analyser: this.track.analyser,
 		pixelRatio: this.track.pixelRatio,
 		track: this.track,
@@ -444,7 +445,7 @@ bkcore.hexgl.HexGL.prototype.tweakShipControls = function()
 		c.airBrake = 0.04;
 		c.maxSpeed = 9.6;
 		c.boosterSpeed = c.maxSpeed * 0.35;
-		c.overdriveSpeed = c.maxSpeed * 1.15;
+		c.overdriveSpeed = c.maxSpeed * 0.38;
 		c.boosterDecay = 0.007;
 		c.angularSpeed = 0.0140;
 		c.airAngularSpeed = 0.0165;
@@ -464,7 +465,7 @@ bkcore.hexgl.HexGL.prototype.tweakShipControls = function()
 		c.airBrake = 0.025;
 		c.maxSpeed = 7.0;
 		c.boosterSpeed = c.maxSpeed * 0.5;
-		c.overdriveSpeed = c.maxSpeed * 1.15;
+		c.overdriveSpeed = c.maxSpeed * 0.38;
 		c.boosterDecay = 0.007;
 		c.angularSpeed = 0.0125;
 		c.airAngularSpeed = 0.0135;

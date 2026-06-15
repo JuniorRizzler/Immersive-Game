@@ -13,13 +13,13 @@ Original project: https://github.com/BKcore/HexGL
 - Removed the original Google Analytics snippet and remote favicon metadata.
 - Added a courier-contract story mode:
   - The player is delivering three pulse cores through a failing city grid.
-  - Three checkpoint cores can be collected during one route instead of requiring three long laps.
+  - Three glowing blue orb cores can be collected during one route instead of requiring three long laps.
   - The HUD tracks `CORES 0/3` progress.
   - The finish screen now gives a story consequence, contract result, delivered core count, crash count, rank, and next target.
 - Added an overdrive mechanic:
   - Drift with `Q`/`A` or `E`/`D` while moving to charge overdrive.
-  - Hold `Space` or `Shift` to spend overdrive for a temporary speed surge.
-- Increased overdrive impact so it creates a meaningful speed burst.
+  - Hold `Space` or `Shift` to spend overdrive for a stabilized speed surge.
+- Retuned overdrive to give a stronger speed illusion while damping drift/yaw so it stays controllable.
 - Added an overdrive HUD meter.
 - Added an orange vignette pulse while overdrive is active.
 - Updated the credits screen to identify this as a modified version.

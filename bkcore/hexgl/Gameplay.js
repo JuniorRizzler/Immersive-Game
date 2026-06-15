@@ -29,6 +29,7 @@ bkcore.hexgl.Gameplay = function(opts)
 	this.shipControls = opts.shipControls;
 	this.cameraControls = opts.cameraControls;
 	this.track = opts.track;
+	this.cores = opts.cores || [];
 	this.analyser = opts.analyser;
 	this.pixelRatio = opts.pixelRatio;
 
@@ -63,31 +64,7 @@ bkcore.hexgl.Gameplay = function(opts)
 		self.raceData.tick(this.timer.time.elapsed);
 
 		self.hud != null && self.hud.updateTime(self.timer.getElapsedTime());
-		var cp = self.checkPoint();
-
-		if(cp != -1 && cp != self.previousCheckPoint)
-		{
-			self.previousCheckPoint = cp;
-
-			if(!self.contract.collected[cp])
-			{
-				self.contract.collected[cp] = true;
-				self.contract.delivered++;
-				self.hud != null && self.hud.updateObjective(self.contract.delivered, self.contract.total);
-
-				if(self.contract.delivered >= self.contract.total)
-				{
-					var t = self.timer.time.elapsed;
-					self.lapTimes.push(t);
-					self.hud != null && self.hud.display("All cores secured", 0.7);
-					self.end(self.results.FINISH);
-				}
-				else
-				{
-					self.hud != null && self.hud.display("Core " + self.contract.delivered + " secured", 0.7);
-				}
-			}
-		}
+		self.checkCorePickups();
 
 		if(self.shipControls.destroyed == true)
 		{
@@ -123,6 +100,11 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 	this.lap = 1;
 	this.contract.delivered = 0;
 	this.contract.collected = {};
+	for(var i = 0; i < this.cores.length; i++)
+	{
+		this.cores[i].collected = false;
+		this.cores[i].visible = true;
+	}
 
 	this.shipControls.reset(this.track.spawn, this.track.spawnRotation);
 	this.shipControls.active = false;
@@ -234,4 +216,38 @@ bkcore.hexgl.Gameplay.prototype.checkPoint = function()
 		return color.b;
 	else
 		return -1;
+}
+
+bkcore.hexgl.Gameplay.prototype.checkCorePickups = function()
+{
+	if(this.cores == undefined || this.cores.length == 0)
+		return;
+
+	var shipPos = this.shipControls.dummy.position;
+	for(var i = 0; i < this.cores.length; i++)
+	{
+		var core = this.cores[i];
+		if(core.collected)
+			continue;
+
+		if(shipPos.distanceTo(core.position) <= core.radius)
+		{
+			core.collected = true;
+			core.visible = false;
+			this.contract.delivered++;
+			this.hud != null && this.hud.updateObjective(this.contract.delivered, this.contract.total);
+
+			if(this.contract.delivered >= this.contract.total)
+			{
+				var t = this.timer.time.elapsed;
+				this.lapTimes.push(t);
+				this.hud != null && this.hud.display("All cores secured", 0.7);
+				this.end(this.results.FINISH);
+			}
+			else
+			{
+				this.hud != null && this.hud.display("Core " + this.contract.delivered + " secured", 0.7);
+			}
+		}
+	}
 }
