@@ -53,6 +53,7 @@ html, body {
   overflow: hidden;
   font-family: 'BebasNeueRegular', arial, sans-serif;
   background: white;
+  touch-action: none;
 }
 
 #global {
@@ -161,6 +162,20 @@ html, body {
 #briefing ul {
   margin: 18px 0 24px;
   padding-left: 28px;
+}
+
+#tutorial {
+  margin: 18px 0 24px;
+  padding: 14px 16px;
+  border-left: 3px solid #50bce5;
+  color: rgba(232, 251, 255, 0.9);
+  background: rgba(80, 188, 229, 0.11);
+  font-size: 0.82em;
+  line-height: 1.25;
+}
+
+#tutorial div + div {
+  margin-top: 8px;
 }
 
 #briefing #ctrl-help {

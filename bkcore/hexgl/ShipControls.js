@@ -127,6 +127,7 @@ bkcore.hexgl.ShipControls = function(ctx)
 	};
 
 	this.touchController = null;
+	this.pointerTouch = null;
 	this.orientationController = null;
 	this.gamepadController = null
 
@@ -142,11 +143,88 @@ bkcore.hexgl.ShipControls = function(ctx)
 				// touch was on the right-hand side of the screen
 				else if (touch.clientX > (ctx.width / 2)) {
 					if (event.type === 'touchend')
+					{
 						self.key.forward = false;
+						self.key.boost = false;
+					}
 					else
+					{
 						self.key.forward = true;
+						self.key.boost = true;
+					}
 				}
 			});
+	}
+	if(ctx.controlType == 1 && window.PointerEvent != null)
+	{
+		this.pointerTouch = {
+			leftId: null,
+			rightId: null,
+			active: false,
+			rightActive: false,
+			startX: 0,
+			startY: 0,
+			stickVector: { x: 0, y: 0 }
+		};
+
+		function updatePointerKeys()
+		{
+			self.key.forward = self.pointerTouch.rightActive;
+			self.key.boost = self.pointerTouch.rightActive && self.pointerTouch.active;
+		}
+
+		function onPointerDown(event)
+		{
+			if(event.clientX < ctx.width / 2 && self.pointerTouch.leftId == null)
+			{
+				self.pointerTouch.leftId = event.pointerId;
+				self.pointerTouch.active = true;
+				self.pointerTouch.startX = event.clientX;
+				self.pointerTouch.startY = event.clientY;
+				self.pointerTouch.stickVector.x = 0;
+				self.pointerTouch.stickVector.y = 0;
+			}
+			else if(event.clientX >= ctx.width / 2 && self.pointerTouch.rightId == null)
+			{
+				self.pointerTouch.rightId = event.pointerId;
+				self.pointerTouch.rightActive = true;
+			}
+			updatePointerKeys();
+			event.preventDefault();
+		}
+
+		function onPointerMove(event)
+		{
+			if(event.pointerId == self.pointerTouch.leftId)
+			{
+				self.pointerTouch.stickVector.x = event.clientX - self.pointerTouch.startX;
+				self.pointerTouch.stickVector.y = event.clientY - self.pointerTouch.startY;
+				event.preventDefault();
+			}
+		}
+
+		function onPointerUp(event)
+		{
+			if(event.pointerId == self.pointerTouch.leftId)
+			{
+				self.pointerTouch.leftId = null;
+				self.pointerTouch.active = false;
+				self.pointerTouch.stickVector.x = 0;
+				self.pointerTouch.stickVector.y = 0;
+			}
+			if(event.pointerId == self.pointerTouch.rightId)
+			{
+				self.pointerTouch.rightId = null;
+				self.pointerTouch.rightActive = false;
+			}
+			updatePointerKeys();
+			event.preventDefault();
+		}
+
+		domElement.addEventListener('pointerdown', onPointerDown, false);
+		domElement.addEventListener('pointermove', onPointerMove, false);
+		domElement.addEventListener('pointerup', onPointerUp, false);
+		domElement.addEventListener('pointercancel', onPointerUp, false);
 	}
 	else if(ctx.controlType == 4 && bkcore.controllers.OrientationController.isCompatible())
 	{
@@ -409,6 +487,12 @@ bkcore.hexgl.ShipControls.prototype.update = function(dt)
 		{
 			angularAmount -= this.touchController.stickVector.x/100 * this.angularSpeed * dt;
 			rollAmount += this.touchController.stickVector.x/100 * this.rollAngle;
+		}
+		else if(this.pointerTouch != null && this.pointerTouch.active)
+		{
+			var pointerSteer = Math.max(-100, Math.min(100, this.pointerTouch.stickVector.x));
+			angularAmount -= pointerSteer/100 * this.angularSpeed * dt;
+			rollAmount += pointerSteer/100 * this.rollAngle;
 		}
 		else if(this.orientationController != null)
 		{
