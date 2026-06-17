@@ -51,6 +51,8 @@ bkcore.hexgl.Gameplay = function(opts)
 	this.contract = {
 		delivered: 0,
 		total: 3,
+		deadline: 60000,
+		timedOut: false,
 		collected: {}
 	};
 	this.score = null;
@@ -65,6 +67,13 @@ bkcore.hexgl.Gameplay = function(opts)
 
 		self.hud != null && self.hud.updateTime(self.timer.getElapsedTime());
 		self.checkCorePickups();
+
+		if(this.timer.time.elapsed >= self.contract.deadline && self.step == 4)
+		{
+			self.contract.timedOut = true;
+			self.hud != null && self.hud.display("Deadline missed", 0.8);
+			self.end(self.results.DESTROYED);
+		}
 
 		if(self.shipControls.destroyed == true)
 		{
@@ -97,8 +106,10 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 {
 	this.finishTime = null;
 	this.score = null;
+	this.result = this.results.NONE;
 	this.lap = 1;
 	this.contract.delivered = 0;
+	this.contract.timedOut = false;
 	this.contract.collected = {};
 	for(var i = 0; i < this.cores.length; i++)
 	{
@@ -241,8 +252,17 @@ bkcore.hexgl.Gameplay.prototype.checkCorePickups = function()
 			{
 				var t = this.timer.time.elapsed;
 				this.lapTimes.push(t);
-				this.hud != null && this.hud.display("All cores secured", 0.7);
-				this.end(this.results.FINISH);
+				if(t <= this.contract.deadline)
+				{
+					this.hud != null && this.hud.display("All cores secured", 0.7);
+					this.end(this.results.FINISH);
+				}
+				else
+				{
+					this.contract.timedOut = true;
+					this.hud != null && this.hud.display("Deadline missed", 0.8);
+					this.end(this.results.DESTROYED);
+				}
 			}
 			else
 			{

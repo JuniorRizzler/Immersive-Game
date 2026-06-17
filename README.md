@@ -14,6 +14,7 @@ Original project: https://github.com/BKcore/HexGL
 - Added a courier-contract story mode:
   - The player is delivering three pulse cores through a failing city grid.
   - Three glowing blue orb cores can be collected during one route instead of requiring three long laps.
+  - The contract must be completed before the one-minute relay window closes.
   - The HUD tracks `CORES 0/3` progress.
   - The finish screen now gives a story consequence, contract result, delivered core count, crash count, rank, and next target.
 - Added an overdrive mechanic:
