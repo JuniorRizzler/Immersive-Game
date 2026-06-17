@@ -223,6 +223,7 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 			}
 		}
 
+		this.gameover.className = this.gameplay.result == this.gameplay.results.FINISH ? "result-success" : "result-failure";
 		this.gameover.style.display = "block";
 		this.document.getElementById("time").innerHTML = this.gameplay.result == this.gameplay.results.FINISH ? tf.m + "'" + tf.s + "''" + tf.ms : "Cargo Lost";
 		this.document.getElementById("result-title").innerHTML = resultTitle;

@@ -318,20 +318,72 @@ html, body {
   right: 0;
   bottom: 0;
   left: 0;
-  background: black;
+  background:
+    linear-gradient(rgba(0, 8, 14, 0.38), rgba(0, 8, 14, 0.72)),
+    url('bg.jpg') no-repeat center center;
+  background-size: cover;
   text-align: center;
-  padding: 100px 20px;
+  padding: 48px 20px;
   color: white;
-  font-size: 2em;
+  font-size: 1.55em;
+  overflow-y: auto;
+}
+
+#step-5:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+#step-5.result-success:before {
+  background:
+    radial-gradient(circle at 50% 12%, rgba(180, 245, 255, 0.35), rgba(80, 188, 229, 0.08) 34%, rgba(0, 0, 0, 0) 62%),
+    linear-gradient(rgba(70, 160, 210, 0.08), rgba(0, 0, 0, 0.18));
+}
+
+#step-5.result-failure:before {
+  background:
+    radial-gradient(circle at 22% 82%, rgba(255, 86, 28, 0.72), rgba(255, 115, 35, 0.2) 22%, rgba(0, 0, 0, 0) 42%),
+    radial-gradient(circle at 76% 72%, rgba(255, 142, 45, 0.58), rgba(184, 31, 20, 0.22) 26%, rgba(0, 0, 0, 0) 48%),
+    linear-gradient(rgba(72, 9, 7, 0.48), rgba(8, 0, 0, 0.84));
+}
+
+#result-box {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(820px, calc(100vw - 40px));
+  margin: 4vh auto;
+  padding: 24px 34px 26px;
+  border: 1px solid rgba(80, 188, 229, 0.52);
+  background: rgba(0, 10, 18, 0.82);
+  box-shadow: 0 0 34px rgba(0, 0, 0, 0.55), inset 0 0 32px rgba(80, 188, 229, 0.11);
+}
+
+#step-5.result-success #result-box {
+  border-color: rgba(135, 238, 255, 0.68);
+  box-shadow: 0 0 42px rgba(80, 188, 229, 0.36), inset 0 0 34px rgba(135, 238, 255, 0.14);
+}
+
+#step-5.result-failure #result-box {
+  border-color: rgba(255, 120, 77, 0.68);
+  box-shadow: 0 0 46px rgba(255, 72, 20, 0.26), inset 0 0 34px rgba(255, 120, 77, 0.14);
 }
 
 #step-5 #time {
-  font-size: 4em
+  font-size: 3.25em;
+  line-height: 0.95;
 }
 
 #result-title {
   color: #ff784d;
-  font-size: 2.2em;
+  font-size: 1.9em;
+  line-height: 1;
+  margin-top: 18px;
   text-transform: uppercase;
 }
 
@@ -340,7 +392,7 @@ html, body {
   max-width: 720px;
   margin: 12px auto;
   color: rgba(255,255,255,0.86);
-  font-size: 1.35em;
+  font-size: 1.08em;
   line-height: 1.2;
 }
 
@@ -349,6 +401,30 @@ html, body {
   border-top: 1px solid rgba(80, 188, 229, 0.45);
   border-bottom: 1px solid rgba(255, 120, 77, 0.45);
   background: rgba(255,255,255,0.04);
+}
+
+#step-5 #ctrl-help {
+  margin-top: 22px;
+  color: #50bce5;
+  font-size: 0.82em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px), (max-height: 620px) {
+  #step-5 {
+    padding: 20px 12px;
+    font-size: 1.35em;
+  }
+
+  #result-box {
+    width: calc(100vw - 24px);
+    margin: 0 auto;
+    padding: 18px 16px 20px;
+  }
+
+  #step-5 #time {
+    font-size: 3em;
+  }
 }
 
 #leapinfo {
