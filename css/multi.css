@@ -136,13 +136,14 @@ html, body {
 
 #briefing {
   box-sizing: border-box;
-  width: min(760px, calc(100vw - 48px));
-  margin: 10vh auto 0;
-  padding: 28px 34px 30px;
-  border: 1px solid rgba(80, 188, 229, 0.55);
-  background: rgba(0, 12, 22, 0.76);
-  box-shadow: 0 0 28px rgba(80, 188, 229, 0.22), inset 0 0 32px rgba(255, 120, 77, 0.12);
-  text-align: left;
+  position: absolute;
+  right: 0;
+  bottom: 24px;
+  left: 0;
+  width: min(960px, calc(100vw - 40px));
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
 }
 
 #briefing h2 {
@@ -165,23 +166,44 @@ html, body {
 }
 
 #tutorial {
-  margin: 18px 0 24px;
-  padding: 14px 16px;
-  border-left: 3px solid #50bce5;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(80, 188, 229, 0.65);
+  border-bottom: 1px solid rgba(80, 188, 229, 0.35);
   color: rgba(232, 251, 255, 0.9);
-  background: rgba(80, 188, 229, 0.11);
-  font-size: 0.82em;
-  line-height: 1.25;
+  background: rgba(0, 0, 0, 0.72);
+  font-size: 0.7em;
+  line-height: 1.15;
+  text-align: left;
 }
 
 #tutorial div + div {
-  margin-top: 8px;
+  margin-top: 0;
 }
 
 #briefing #ctrl-help {
   color: #50bce5;
+  font-size: 0.78em;
   text-align: center;
   text-transform: uppercase;
+}
+
+@media (max-width: 760px), (max-height: 560px) {
+  #briefing {
+    bottom: 12px;
+    width: calc(100vw - 24px);
+  }
+
+  #tutorial {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    font-size: 0.58em;
+    padding: 8px 10px;
+  }
+
 }
 
 #menucontainer {
@@ -257,11 +279,18 @@ html, body {
   font-size: 2em;
   background-repeat: no-repeat;
   background-position: center center;
-  -moz-background-size: 60% auto;
-  -webkit-background-size: 60% auto;
-  -ms-background-size: 60% auto;
-  -o-background-size: 60% auto;
-  background-size: 60% auto;
+  -moz-background-size: min(92vw, 1200px) auto;
+  -webkit-background-size: min(92vw, 1200px) auto;
+  -ms-background-size: min(92vw, 1200px) auto;
+  -o-background-size: min(92vw, 1200px) auto;
+  background-size: min(92vw, 1200px) auto;
+}
+
+@media (max-width: 760px), (max-height: 560px) {
+  #step-2 {
+    background-size: min(78vw, 780px) auto;
+    background-position: center 20%;
+  }
 }
 
 #step-3 {

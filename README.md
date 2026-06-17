@@ -18,7 +18,7 @@ Original project: https://github.com/BKcore/HexGL
   - The finish screen now gives a story consequence, contract result, delivered core count, crash count, rank, and next target.
 - Added an overdrive mechanic:
   - Drift with `Q`/`A` or `E`/`D` while moving to charge overdrive.
-  - Hold `Space` or `Shift` to spend overdrive for a stabilized speed surge.
+  - Hold `Space` to spend overdrive for a stabilized speed surge.
 - Retuned overdrive to give a stronger speed illusion while damping drift/yaw so it stays controllable.
 - Added an overdrive HUD meter.
 - Added an orange vignette pulse while overdrive is active.
@@ -30,7 +30,7 @@ Original project: https://github.com/BKcore/HexGL
 - Arrow Left / Arrow Right: steer
 - Q or A: left air brake / drift
 - E or D: right air brake / drift
-- Space or Shift: overdrive
+- Space: overdrive
 
 ## Run locally
 

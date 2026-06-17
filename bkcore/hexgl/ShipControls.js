@@ -352,7 +352,6 @@ bkcore.hexgl.ShipControls = function(ctx)
 			case 68: /*D*/self.key.rtrigger = true; break;
 			case 69: /*E*/self.key.rtrigger = true; break;
 
-			case 16: /*shift*/self.key.boost = true; break;
 			case 32: /*space*/self.key.boost = true; break;
 		}
 	};
@@ -375,7 +374,6 @@ bkcore.hexgl.ShipControls = function(ctx)
 			case 68: /*D*/self.key.rtrigger = false; break;
 			case 69: /*E*/self.key.rtrigger = false; break;
 
-			case 16: /*shift*/self.key.boost = false; break;
 			case 32: /*space*/self.key.boost = false; break;
 		}
 	};
