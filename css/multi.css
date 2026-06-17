@@ -107,7 +107,7 @@ html, body {
 }
 
 .game-title {
-  font-size: 7.2em;
+  font-size: 8.8em;
   line-height: 0.82;
   letter-spacing: 0;
   text-shadow:
@@ -117,9 +117,9 @@ html, body {
 }
 
 .byline {
-  margin-top: 12px;
+  margin-top: 16px;
   color: rgba(255, 255, 255, 0.78);
-  font-size: 1.3em;
+  font-size: 1.85em;
   line-height: 1;
   text-shadow: 0 0 14px rgba(0,0,0,0.7);
 }
@@ -222,6 +222,19 @@ html, body {
 }
 
 @media (max-width: 760px), (max-height: 560px) {
+  #title {
+    padding-top: 3vh;
+  }
+
+  .game-title {
+    font-size: 6.4em;
+  }
+
+  .byline {
+    margin-top: 10px;
+    font-size: 1.45em;
+  }
+
   #contract-briefing {
     top: 10px;
     width: calc(100vw - 24px);
