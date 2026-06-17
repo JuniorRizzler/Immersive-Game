@@ -28,9 +28,9 @@ Original project: https://github.com/BKcore/HexGL
 
 - Arrow Up: accelerate
 - Arrow Left / Arrow Right: steer
-- Q or A: left air brake / drift
-- E or D: right air brake / drift
-- Space: overdrive
+- Q or A: left air brake / drift for wider turns
+- E or D: right air brake / drift for wider turns
+- Spacebar: activate overdrive after charging it with drifts
 
 ## Run locally
 
