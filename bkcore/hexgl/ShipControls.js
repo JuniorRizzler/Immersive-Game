@@ -61,6 +61,8 @@ bkcore.hexgl.ShipControls = function(ctx)
 	this.shield = 1.0;
 	this.crashCount = 0;
 	this.angular = 0.0;
+	this.trackAssistSteer = 0.0;
+	this.trackAssistBrake = 0.0;
 
 	this.currentVelocity = new THREE.Vector3();
 
@@ -595,10 +597,24 @@ bkcore.hexgl.ShipControls.prototype.update = function(dt)
 			this.overdriveActive = true;
 	}
 
+	if(this.gyroAssist)
+	{
+		var trackAssist = this.getGyroTrackAssist();
+		angularAmount -= trackAssist.steer * this.angularSpeed * 1.35 * dt;
+		rollAmount += trackAssist.steer * this.rollAngle * 0.34;
+		this.trackAssistBrake = trackAssist.brake;
+	}
+	else
+	{
+		this.trackAssistBrake = 0.0;
+	}
+
 	this.angular += (angularAmount - this.angular) * this.angularLerp;
 	this.rotation.y = this.angular;
 
 	this.speed = Math.max(0.0, Math.min(this.speed, this.maxSpeed));
+	if(this.gyroAssist && this.trackAssistBrake > 0.0)
+		this.speed *= (1.0 - Math.min(0.28, this.trackAssistBrake * 0.28));
 	this.speedRatio = this.speed / this.maxSpeed;
 	this.movement.z += this.speed * dt;
 
@@ -773,6 +789,59 @@ bkcore.hexgl.ShipControls.prototype.chargeOverdrive = function(dt)
 	this.overdrive += this.overdriveChargeRate * steeringLoad * dt;
 	if(this.overdrive > this.overdriveMax)
 		this.overdrive = this.overdriveMax;
+}
+
+bkcore.hexgl.ShipControls.prototype.sampleGyroAssistOpen = function(localX, localZ)
+{
+	var distance = Math.sqrt(localX * localX + localZ * localZ);
+	var v = new THREE.Vector3(localX, 0, localZ);
+	this.dummy.matrix.rotateAxis(v);
+
+	var x = Math.round(this.collisionMap.pixels.width / 2 + this.dummy.position.x * this.collisionPixelRatio + v.x * distance);
+	var z = Math.round(this.collisionMap.pixels.height / 2 + this.dummy.position.z * this.collisionPixelRatio + v.z * distance);
+	var color = this.collisionMap.getPixel(x, z);
+
+	return color.r / 255;
+}
+
+bkcore.hexgl.ShipControls.prototype.getGyroTrackAssist = function()
+{
+	if(!this.gyroAssist || !this.collisionMap || !this.collisionMap.loaded)
+		return { steer: 0.0, brake: 0.0 };
+
+	var speedScale = Math.max(0.6, Math.min(1.35, this.speed / Math.max(1.0, this.maxSpeed) + 0.45));
+	var near = 20 * speedScale;
+	var mid = 42 * speedScale;
+	var far = 72 * speedScale;
+
+	var leftNear = this.sampleGyroAssistOpen(near * 0.72, near);
+	var rightNear = this.sampleGyroAssistOpen(-near * 0.72, near);
+	var leftMid = this.sampleGyroAssistOpen(mid * 0.62, mid);
+	var rightMid = this.sampleGyroAssistOpen(-mid * 0.62, mid);
+	var leftFar = this.sampleGyroAssistOpen(far * 0.48, far);
+	var rightFar = this.sampleGyroAssistOpen(-far * 0.48, far);
+	var front = this.sampleGyroAssistOpen(0, far * 0.78);
+
+	var sideBalance =
+		((rightNear - leftNear) * 0.50) +
+		((rightMid - leftMid) * 0.34) +
+		((rightFar - leftFar) * 0.16);
+	var danger = 1.0 - Math.min(front, Math.min(
+		Math.max(leftNear, rightNear),
+		Math.max(leftMid, rightMid)
+	));
+
+	var steer = sideBalance * (0.95 + danger * 1.35);
+	steer = Math.max(-0.82, Math.min(0.82, steer));
+	if(Math.abs(steer) < 0.035)
+		steer = 0.0;
+
+	this.trackAssistSteer += (steer - this.trackAssistSteer) * 0.16;
+
+	return {
+		steer: this.trackAssistSteer,
+		brake: Math.max(0.0, Math.min(1.0, danger))
+	};
 }
 
 bkcore.hexgl.ShipControls.prototype.collisionCheck = function(dt)
