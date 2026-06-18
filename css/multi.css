@@ -231,6 +231,29 @@ html, body {
   text-transform: uppercase;
 }
 
+#launch-race {
+  display: inline-block;
+  min-width: 210px;
+  min-height: 48px;
+  padding: 10px 28px 8px;
+  border: 1px solid rgba(255, 120, 77, 0.82);
+  border-radius: 2px;
+  color: #ffffff;
+  background: rgba(255, 120, 77, 0.2);
+  box-shadow: 0 0 22px rgba(255, 120, 77, 0.24), inset 0 0 18px rgba(255, 120, 77, 0.1);
+  font-family: 'BebasNeueRegular', arial, sans-serif;
+  font-size: 1em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#launch-race:active,
+#launch-race:hover {
+  background: rgba(255, 120, 77, 0.34);
+}
+
 @media (max-width: 760px), (max-height: 560px) {
   #title {
     padding-top: 3vh;
@@ -269,6 +292,17 @@ html, body {
     gap: 4px;
     font-size: 0.52em;
     padding: 8px 10px;
+  }
+
+  #launch-race {
+    min-width: 168px;
+    min-height: 40px;
+    padding: 8px 20px 7px;
+    font-size: 0.72em;
+  }
+
+  #briefing #ctrl-help {
+    font-size: 0.55em;
   }
 
 }
@@ -355,8 +389,141 @@ html, body {
 
 @media (max-width: 760px), (max-height: 560px) {
   #step-2 {
-    background-size: min(68vw, 700px) auto;
-    background-position: center 15%;
+    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+    font-size: 1.65em;
+    background-size: min(82vw, 640px) auto;
+    background-position: center 43%;
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  #title {
+    padding-top: 5vh;
+  }
+
+  .game-title {
+    font-size: 4.8em;
+  }
+
+  .byline {
+    font-size: 1.35em;
+  }
+
+  .tagline {
+    margin-top: 10px;
+    font-size: 1.05em;
+  }
+
+  #menucontainer {
+    bottom: 6%;
+  }
+
+  #menu {
+    width: calc(100vw - 28px);
+    font-size: 1.55em;
+  }
+
+  #contract-briefing {
+    top: max(8px, env(safe-area-inset-top));
+    width: calc(100vw - 18px);
+    padding: 7px 9px;
+  }
+
+  #contract-briefing h2 {
+    font-size: 0.92em;
+  }
+
+  #contract-briefing p {
+    font-size: 0.49em;
+    line-height: 1.12;
+  }
+
+  #briefing {
+    bottom: max(8px, env(safe-area-inset-bottom));
+    width: calc(100vw - 18px);
+  }
+
+  #tutorial {
+    grid-template-columns: 1fr;
+    gap: 3px;
+    margin-bottom: 8px;
+    padding: 7px 9px;
+    font-size: 0.48em;
+    line-height: 1.08;
+  }
+
+  #step-2 {
+    background-size: 94vw auto;
+    background-position: center 42%;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .game-title {
+    font-size: 4.7em;
+  }
+
+  .byline {
+    font-size: 1.15em;
+  }
+
+  .tagline {
+    display: none;
+  }
+
+  #menucontainer {
+    bottom: 4%;
+  }
+
+  #menu {
+    font-size: 1.3em;
+  }
+
+  #contract-briefing {
+    top: max(6px, env(safe-area-inset-top));
+    width: min(60vw, 560px);
+    padding: 6px 10px;
+  }
+
+  #contract-briefing h2 {
+    font-size: 0.82em;
+  }
+
+  #contract-briefing p {
+    font-size: 0.43em;
+    line-height: 1.08;
+  }
+
+  #briefing {
+    right: max(8px, env(safe-area-inset-right));
+    bottom: 8px;
+    left: auto;
+    width: min(48vw, 520px);
+  }
+
+  #tutorial {
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
+    margin-bottom: 8px;
+    padding: 7px 9px;
+    font-size: 0.43em;
+    line-height: 1.08;
+  }
+
+  #launch-race {
+    min-width: 150px;
+    min-height: 36px;
+    padding: 7px 18px 6px;
+    font-size: 0.58em;
+  }
+
+  #briefing #ctrl-help {
+    font-size: 0.42em;
+  }
+
+  #step-2 {
+    background-size: min(48vw, 520px) auto;
+    background-position: 18% center;
   }
 }
 
