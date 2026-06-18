@@ -211,6 +211,8 @@ bkcore.hexgl.HexGL.prototype.continueStation = function()
 
 	this.stationPromptActive = false;
 	this.gameover.style.display = "none";
+	this.active = true;
+	this.containers.main.parentElement.style.display = "block";
 	this.document.querySelector("#step-5 #ctrl-help").innerHTML = "Click/Touch to continue.";
 	return this.gameplay.continueFromStation();
 }

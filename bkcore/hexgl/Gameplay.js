@@ -57,6 +57,8 @@ bkcore.hexgl.Gameplay = function(opts)
 		levelDeadlines: [60000, 120000, 180000],
 		deadline: 60000,
 		timedOut: false,
+		awaitingStation: false,
+		stationRadius: 360,
 		collected: {}
 	};
 	this.score = null;
@@ -73,8 +75,9 @@ bkcore.hexgl.Gameplay = function(opts)
 
 		self.hud != null && self.hud.updateTime(self.timer.getElapsedTime());
 		self.checkCorePickups();
+		self.checkStationDock();
 
-		if(this.timer.time.elapsed >= self.contract.deadline && self.step == 4)
+		if(this.timer.time.elapsed >= self.contract.deadline && self.step == 4 && !self.contract.awaitingStation)
 		{
 			self.contract.timedOut = true;
 			self.hud != null && self.hud.display("Deadline missed", 0.8);
@@ -119,6 +122,7 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 	this.contract.total = this.contract.levelTargets[0];
 	this.contract.deadline = this.contract.levelDeadlines[0];
 	this.contract.timedOut = false;
+	this.contract.awaitingStation = false;
 	this.contract.collected = {};
 	this.resetCorePickups(0);
 
@@ -254,6 +258,7 @@ bkcore.hexgl.Gameplay.prototype.advanceContractLevel = function()
 	this.contract.level++;
 	this.contract.total = this.contract.levelTargets[this.contract.level - 1];
 	this.contract.deadline = this.contract.levelDeadlines[this.contract.level - 1];
+	this.contract.awaitingStation = false;
 	this.resetCorePickups(2000);
 
 	if(this.hud != null)
@@ -269,6 +274,7 @@ bkcore.hexgl.Gameplay.prototype.advanceContractLevel = function()
 bkcore.hexgl.Gameplay.prototype.enterStation = function()
 {
 	this.step = 50;
+	this.contract.awaitingStation = false;
 	this.stationStartedAt = (new Date).getTime();
 	this.timer.pause(true);
 
@@ -285,6 +291,31 @@ bkcore.hexgl.Gameplay.prototype.enterStation = function()
 	}
 
 	this.onStation.call(this);
+}
+
+bkcore.hexgl.Gameplay.prototype.markStationReturn = function()
+{
+	this.contract.awaitingStation = true;
+
+	if(this.hud != null)
+	{
+		this.hud.updateObjective(this.contract.delivered, this.contract.total);
+		this.hud.display("Return to start station", 1.2);
+	}
+}
+
+bkcore.hexgl.Gameplay.prototype.checkStationDock = function()
+{
+	if(!this.contract.awaitingStation || this.step != 4)
+		return;
+
+	var shipPos = this.shipControls.dummy.position;
+	var dx = shipPos.x - this.track.spawn.x;
+	var dz = shipPos.z - this.track.spawn.z;
+	var distance = Math.sqrt(dx * dx + dz * dz);
+
+	if(distance <= this.contract.stationRadius)
+		this.enterStation();
 }
 
 bkcore.hexgl.Gameplay.prototype.continueFromStation = function()
@@ -339,7 +370,7 @@ bkcore.hexgl.Gameplay.prototype.checkCorePickups = function()
 				{
 					if(this.contract.level < this.contract.maxLevel)
 					{
-						this.enterStation();
+						this.markStationReturn();
 						return;
 					}
 					else

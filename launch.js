@@ -70,9 +70,11 @@
     return init(s[0][3], s[1][3], s[2][3], s[3][3]);
   };
 
-  $('step-5').onclick = function() {
+  $('step-5').onclick = function(event) {
     if (window.hexGL != null && window.hexGL.stationPromptActive) {
-      return window.hexGL.continueStation();
+      event != null && event.preventDefault();
+      window.hexGL.continueStation();
+      return false;
     }
     return window.location.reload();
   };
