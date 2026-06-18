@@ -136,7 +136,8 @@ bkcore.hexgl.ShipControls = function(ctx)
 	{
 		function updateGyroFallback(event) {
 			var x = (event.clientX / ctx.width) * 2 - 1;
-			self.gyroFallback.steer = Math.max(-1.0, Math.min(1.0, x));
+			x = Math.max(-1.0, Math.min(1.0, x));
+			self.gyroFallback.steer = (x < 0 ? -1 : 1) * Math.pow(Math.abs(x), 1.45) * 0.85;
 		}
 		this.gyroFallback = {
 			active: true,
@@ -520,17 +521,17 @@ bkcore.hexgl.ShipControls.prototype.update = function(dt)
 			var gyroSteer = this.orientationController.getSteer();
 			if(this.gyroFallback != null && Math.abs(gyroSteer) < 0.001)
 			{
-				this.gyroFallback.smoothSteer += (this.gyroFallback.steer - this.gyroFallback.smoothSteer) * 0.18;
+				this.gyroFallback.smoothSteer += (this.gyroFallback.steer - this.gyroFallback.smoothSteer) * 0.12;
 				gyroSteer = this.gyroFallback.smoothSteer;
 			}
-			angularAmount -= gyroSteer * this.angularSpeed * 1.55 * dt;
-			rollAmount += gyroSteer * this.rollAngle;
+			angularAmount -= gyroSteer * this.angularSpeed * 1.08 * dt;
+			rollAmount += gyroSteer * this.rollAngle * 0.82;
 		}
 		else if(this.gyroFallback != null)
 		{
-			this.gyroFallback.smoothSteer += (this.gyroFallback.steer - this.gyroFallback.smoothSteer) * 0.18;
-			angularAmount -= this.gyroFallback.smoothSteer * this.angularSpeed * 1.35 * dt;
-			rollAmount += this.gyroFallback.smoothSteer * this.rollAngle;
+			this.gyroFallback.smoothSteer += (this.gyroFallback.steer - this.gyroFallback.smoothSteer) * 0.12;
+			angularAmount -= this.gyroFallback.smoothSteer * this.angularSpeed * 1.08 * dt;
+			rollAmount += this.gyroFallback.smoothSteer * this.rollAngle * 0.82;
 		}
 		else if(this.gamepadController != null && this.gamepadController.updateAvailable())
 		{

@@ -63,7 +63,7 @@
       this.dgamma = null;
       this.steer = 0.0;
       this.smoothSteer = 0.0;
-      this.deadZone = 0.025;
+      this.deadZone = 0.07;
       this.touches = null;
       window.addEventListener('deviceorientation', (function(e) {
         return _this.orientationChange(e);
@@ -96,11 +96,14 @@
       this.alpha = event.alpha - this.dalpha;
       this.beta = event.beta - this.dbeta;
       this.gamma = event.gamma - this.dgamma;
-      this.steer = Math.max(-1.0, Math.min(1.0, this.gamma / 28));
+      this.steer = Math.max(-1.0, Math.min(1.0, this.gamma / 44));
       if (Math.abs(this.steer) < this.deadZone) {
         this.steer = 0.0;
       }
-      this.smoothSteer += (this.steer - this.smoothSteer) * 0.28;
+      else {
+        this.steer = (this.steer < 0 ? -1 : 1) * Math.pow(Math.abs(this.steer), 1.45);
+      }
+      this.smoothSteer += (this.steer - this.smoothSteer) * 0.14;
       return false;
     };
 
