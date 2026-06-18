@@ -52,9 +52,11 @@ bkcore.hexgl.Gameplay = function(opts)
 		delivered: 0,
 		total: 3,
 		level: 1,
+		levelLap: 1,
 		maxLevel: 3,
+		levelLapTargets: [1, 2, 3],
 		levelTargets: [3, 6, 9],
-		levelDeadlines: [60000, 120000, 180000],
+		levelDeadlines: [60000, 165000, 210000],
 		deadline: 60000,
 		timedOut: false,
 		awaitingStation: false,
@@ -78,7 +80,7 @@ bkcore.hexgl.Gameplay = function(opts)
 		self.checkCorePickups();
 		self.checkStationDock();
 
-		if(this.timer.time.elapsed >= self.contract.deadline && self.step == 4 && !self.contract.awaitingStation)
+		if(this.timer.time.elapsed >= self.contract.deadline && self.step == 4)
 		{
 			self.contract.timedOut = true;
 			self.hud != null && self.hud.display("Deadline missed", 0.8);
@@ -119,6 +121,7 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 	this.result = this.results.NONE;
 	this.lap = 1;
 	this.contract.level = 1;
+	this.contract.levelLap = 1;
 	this.contract.delivered = 0;
 	this.contract.total = this.contract.levelTargets[0];
 	this.contract.deadline = this.contract.levelDeadlines[0];
@@ -258,6 +261,8 @@ bkcore.hexgl.Gameplay.prototype.advanceContractLevel = function()
 		return false;
 
 	this.contract.level++;
+	this.contract.levelLap = 1;
+	this.contract.delivered = 0;
 	this.contract.total = this.contract.levelTargets[this.contract.level - 1];
 	this.contract.deadline = this.contract.levelDeadlines[this.contract.level - 1];
 	this.contract.awaitingStation = false;
@@ -267,6 +272,7 @@ bkcore.hexgl.Gameplay.prototype.advanceContractLevel = function()
 	{
 		this.hud.updateLap(this.contract.level, this.contract.maxLevel);
 		this.hud.updateObjective(this.contract.delivered, this.contract.total);
+		this.hud.resetTime();
 		this.hud.display("Level " + this.contract.level + " contract uploaded", 1);
 	}
 
@@ -302,7 +308,7 @@ bkcore.hexgl.Gameplay.prototype.markStationReturn = function()
 	if(this.hud != null)
 	{
 		this.hud.updateObjective(this.contract.delivered, this.contract.total);
-		this.hud.display("Return to start station", 1.2);
+		this.hud.display("Return to start line", 1.2);
 	}
 }
 
@@ -317,7 +323,33 @@ bkcore.hexgl.Gameplay.prototype.checkStationDock = function()
 	var distance = Math.sqrt(dx * dx + dz * dz);
 
 	if(distance <= this.contract.stationRadius)
+		this.completeLevelLap();
+}
+
+bkcore.hexgl.Gameplay.prototype.completeLevelLap = function()
+{
+	this.contract.awaitingStation = false;
+
+	if(this.contract.levelLap < this.contract.levelLapTargets[this.contract.level - 1])
+	{
+		this.contract.levelLap++;
+		this.resetCorePickups(1600);
+		if(this.hud != null)
+		{
+			this.hud.updateObjective(this.contract.delivered, this.contract.total);
+			this.hud.display("Lap " + this.contract.levelLap + " cores online", 1);
+		}
+		return;
+	}
+
+	if(this.contract.level < this.contract.maxLevel)
+	{
 		this.enterStation();
+		return;
+	}
+
+	this.hud != null && this.hud.display("All levels secured", 0.7);
+	this.end(this.results.FINISH);
 }
 
 bkcore.hexgl.Gameplay.prototype.continueFromStation = function()
@@ -325,16 +357,11 @@ bkcore.hexgl.Gameplay.prototype.continueFromStation = function()
 	if(this.step != 50)
 		return false;
 
-	var now = (new Date).getTime();
-	this.timer.time.start += now - this.stationStartedAt;
-	this.timer.time.current = now;
-	this.timer.time.previous = now;
-	this.timer.pause(false);
-
 	if(!this.advanceContractLevel())
 		return false;
 
 	this.step = 4;
+	this.timer.start();
 	this.shipControls.active = this.mode != "replay";
 
 	if(this.hud != null)
@@ -374,22 +401,15 @@ bkcore.hexgl.Gameplay.prototype.checkCorePickups = function()
 			this.contract.delivered++;
 			this.hud != null && this.hud.updateObjective(this.contract.delivered, this.contract.total);
 
-			if(this.contract.delivered >= this.contract.total)
+			var lapTarget = this.contract.levelLap * 3;
+			if(this.contract.delivered >= lapTarget)
 			{
 				var t = this.timer.time.elapsed;
 				this.lapTimes.push(t);
 				if(t <= this.contract.deadline)
 				{
-					if(this.contract.level < this.contract.maxLevel)
-					{
-						this.markStationReturn();
-						return;
-					}
-					else
-					{
-						this.hud != null && this.hud.display("All levels secured", 0.7);
-						this.end(this.results.FINISH);
-					}
+					this.markStationReturn();
+					return;
 				}
 				else
 				{

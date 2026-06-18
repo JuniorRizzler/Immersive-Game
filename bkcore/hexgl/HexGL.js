@@ -195,6 +195,7 @@ bkcore.hexgl.HexGL.prototype.displayStationPrompt = function()
 	var nextLevel = this.gameplay.contract.level + 1;
 	var maxLevel = this.gameplay.contract.maxLevel;
 	var nextTarget = this.gameplay.contract.levelTargets[nextLevel - 1];
+	var nextLaps = this.gameplay.contract.levelLapTargets[nextLevel - 1];
 	var deadline = bkcore.Timer.msToTimeString(this.gameplay.contract.levelDeadlines[nextLevel - 1]);
 
 	this.stationPromptActive = true;
@@ -216,7 +217,7 @@ bkcore.hexgl.HexGL.prototype.displayStationPrompt = function()
 			return;
 		self.stationPromptReady = true;
 		self.document.getElementById("contract-summary").innerHTML = "Station service complete. Hull integrity and overdrive are full.";
-		self.document.getElementById("rank-summary").innerHTML = "Continue to Level " + nextLevel + "/" + maxLevel + ": deliver " + nextTarget + " total cores before " + deadline.m + "'" + deadline.s + "''. Or stop here and bank the secured relay.";
+		self.document.getElementById("rank-summary").innerHTML = "Continue to Level " + nextLevel + "/" + maxLevel + ": clear " + nextLaps + " lap" + (nextLaps > 1 ? "s" : "") + " and collect " + nextTarget + " cores before " + deadline.m + "'" + deadline.s + "''. Or stop here and bank the secured relay.";
 		self.document.getElementById("station-actions").style.display = "flex";
 		self.document.querySelector("#step-5 #ctrl-help").innerHTML = "Choose the next contract move.";
 	}, 950);
@@ -320,7 +321,7 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 		if(timedOut)
 		{
 			var deadlineTime = bkcore.Timer.msToTimeString(deadline);
-			nextTarget = "Level " + level + " relay window closed. Reach " + delivered + "/" + total + " cores before " + deadlineTime.m + "'" + deadlineTime.s + "''.";
+			nextTarget = "Level " + level + " relay window closed. Clear the required laps and reach " + delivered + "/" + total + " cores before " + deadlineTime.m + "'" + deadlineTime.s + "''.";
 			storyResult = "The delivery missed the Level " + level + " relay window. The city grid overloaded, fires climbed the skyline, and the lower districts went dark.";
 		}
 
@@ -359,7 +360,7 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 		this.document.querySelector("#step-5 #ctrl-help").innerHTML = "Click/Touch to continue.";
 		this.document.getElementById("time").innerHTML = this.gameplay.result == this.gameplay.results.FINISH ? tf.m + "'" + tf.s + "''" + tf.ms : timedOut ? "Time Expired" : "Cargo Lost";
 		this.document.getElementById("result-title").innerHTML = resultTitle;
-		this.document.getElementById("contract-summary").innerHTML = storyResult + "<br>Level: " + level + "/" + maxLevel + " &middot; Pulse cores delivered: " + delivered + "/" + total + " &middot; Hull impacts: " + crashes;
+		this.document.getElementById("contract-summary").innerHTML = storyResult + "<br>Level: " + level + "/" + maxLevel + " &middot; Lap: " + this.gameplay.contract.levelLap + "/" + this.gameplay.contract.levelLapTargets[level - 1] + " &middot; Pulse cores delivered: " + delivered + "/" + total + " &middot; Hull impacts: " + crashes;
 		this.document.getElementById("rank-summary").innerHTML = rank + "<br>" + nextTarget;
 		this.containers.main.parentElement.style.display = "none";
 		return;
