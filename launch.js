@@ -78,23 +78,28 @@
     return window.location.reload();
   };
 
-  $('station-continue').onclick = function(event) {
+  function continueStation(event) {
     event != null && event.stopPropagation();
     event != null && event.preventDefault();
     if (window.hexGL != null) {
       window.hexGL.continueStation();
     }
     return false;
-  };
+  }
 
-  $('station-stop').onclick = function(event) {
+  function stopStation(event) {
     event != null && event.stopPropagation();
     event != null && event.preventDefault();
     if (window.hexGL != null) {
       window.hexGL.stopStation();
     }
     return false;
-  };
+  }
+
+  $('station-continue').onclick = continueStation;
+  $('station-stop').onclick = stopStation;
+  $('station-continue').addEventListener('click', continueStation, false);
+  $('station-stop').addEventListener('click', stopStation, false);
 
   $('s-credits').onclick = function() {
     $('step-1').style.display = 'none';

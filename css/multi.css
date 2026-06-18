@@ -385,6 +385,7 @@ html, body {
   right: 0;
   bottom: 0;
   left: 0;
+  z-index: 20000;
   background:
     linear-gradient(rgba(0, 8, 14, 0.38), rgba(0, 8, 14, 0.72)),
     url('bg.jpg') no-repeat center center;
@@ -394,6 +395,7 @@ html, body {
   color: white;
   font-size: 1.55em;
   overflow-y: auto;
+  pointer-events: auto;
 }
 
 #step-5:before {
@@ -436,6 +438,7 @@ html, body {
   border: 1px solid rgba(80, 188, 229, 0.52);
   background: rgba(0, 10, 18, 0.82);
   box-shadow: 0 0 34px rgba(0, 0, 0, 0.55), inset 0 0 32px rgba(80, 188, 229, 0.11);
+  pointer-events: auto;
 }
 
 #step-5.result-success #result-box {
@@ -499,6 +502,8 @@ html, body {
 }
 
 #station-actions button {
+  position: relative;
+  z-index: 2;
   min-width: 190px;
   padding: 10px 18px 8px;
   border: 1px solid rgba(80, 188, 229, 0.8);
@@ -510,6 +515,7 @@ html, body {
   font-size: 1em;
   line-height: 1;
   text-transform: uppercase;
+  pointer-events: auto;
 }
 
 #station-actions button:hover {
