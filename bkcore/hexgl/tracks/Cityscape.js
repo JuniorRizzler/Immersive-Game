@@ -447,12 +447,13 @@ bkcore.hexgl.tracks.Cityscape = {
 		if(typeof(Storage) !== "undefined")
 		{
 			try {
-				var ghostData = JSON.parse(localStorage['pulse-rush-ghost'] || "[]");
+				var ghostSave = JSON.parse(localStorage['pulse-rush-ghost'] || "[]");
+				var ghostData = ghostSave.data != undefined ? ghostSave.data : ghostSave;
 				if(ghostData != undefined && ghostData.length > 2)
 				{
 					ghostShip.ghostData = ghostData;
 					var ghostTrailGeometry = new THREE.Geometry();
-					var ghostTrailStep = Math.max(1, Math.floor(ghostData.length / 260));
+					var ghostTrailStep = Math.max(1, Math.floor(ghostData.length / 900));
 					for(var gi = 0; gi < ghostData.length; gi += ghostTrailStep)
 					{
 						ghostTrailGeometry.vertices.push(new THREE.Vector3(
@@ -482,6 +483,8 @@ bkcore.hexgl.tracks.Cityscape = {
 			}
 			catch(e) {
 				ghostShip.ghostData = null;
+				try { localStorage.removeItem('pulse-rush-ghost'); }
+				catch(storageError) {}
 			}
 		}
 		ctx.components.ghostShip = ghostShip;

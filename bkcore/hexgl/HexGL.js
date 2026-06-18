@@ -258,6 +258,34 @@ bkcore.hexgl.HexGL.prototype.stopStation = function()
 	return true;
 }
 
+bkcore.hexgl.HexGL.prototype.saveGhostRun = function()
+{
+	if(typeof(Storage) === "undefined" || this.gameplay == null || this.gameplay.raceData == undefined)
+		return false;
+
+	try {
+		var ghostRun = this.compactGhostRun(this.gameplay.raceData.export(), 900);
+		if(ghostRun.length <= 12)
+			return false;
+
+		localStorage['pulse-rush-ghost'] = JSON.stringify({
+			version: 2,
+			savedAt: (new Date).getTime(),
+			result: this.gameplay.result,
+			level: this.gameplay.contract != undefined ? this.gameplay.contract.level : 1,
+			data: ghostRun
+		});
+		return true;
+	}
+	catch(e) {
+		console.warn("Unable to save ghost run.");
+		try { localStorage.removeItem('pulse-rush-ghost'); }
+		catch(storageError) {}
+	}
+
+	return false;
+}
+
 bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 {
 	this.active = false;
@@ -274,19 +302,7 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 
 	if(this.gameover !== null)
 	{
-		if(typeof(Storage) !== "undefined" && this.gameplay.raceData != undefined)
-		{
-			try {
-				var ghostRun = this.gameplay.raceData.export();
-				var shouldSaveGhost = this.gameplay.result == this.gameplay.results.FINISH;
-				var previousGhost = JSON.parse(localStorage['pulse-rush-ghost'] || "[]");
-				if(shouldSaveGhost || previousGhost.length < 20)
-					localStorage['pulse-rush-ghost'] = JSON.stringify(ghostRun);
-			}
-			catch(e) {
-				console.warn("Unable to save ghost run.");
-			}
-		}
+		this.saveGhostRun();
 
 		var delivered = this.gameplay.contract != undefined ? this.gameplay.contract.delivered : 0;
 		var total = this.gameplay.contract != undefined ? this.gameplay.contract.total : 3;
@@ -430,6 +446,27 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 		sl != undefined && (sl.innerHTML = '');
 
 	dc.style.display = 'block';
+}
+
+bkcore.hexgl.HexGL.prototype.compactGhostRun = function(data, maxPoints)
+{
+	if(data == undefined || data.length == undefined)
+		return [];
+
+	maxPoints = maxPoints || 900;
+	if(data.length <= maxPoints)
+		return data.slice(0);
+
+	var compact = [];
+	var step = Math.max(1, Math.floor(data.length / maxPoints));
+	for(var i = 0; i < data.length; i += step)
+		compact.push(data[i]);
+
+	var last = data[data.length - 1];
+	if(compact.length == 0 || compact[compact.length - 1][0] != last[0])
+		compact.push(last);
+
+	return compact;
 }
 
 bkcore.hexgl.HexGL.prototype.initRenderer = function()
