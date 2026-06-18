@@ -51,6 +51,10 @@ bkcore.hexgl.Gameplay = function(opts)
 	this.contract = {
 		delivered: 0,
 		total: 3,
+		level: 1,
+		maxLevel: 3,
+		levelTargets: [3, 6, 9],
+		levelDeadlines: [60000, 120000, 180000],
 		deadline: 60000,
 		timedOut: false,
 		collected: {}
@@ -108,14 +112,13 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 	this.score = null;
 	this.result = this.results.NONE;
 	this.lap = 1;
+	this.contract.level = 1;
 	this.contract.delivered = 0;
+	this.contract.total = this.contract.levelTargets[0];
+	this.contract.deadline = this.contract.levelDeadlines[0];
 	this.contract.timedOut = false;
 	this.contract.collected = {};
-	for(var i = 0; i < this.cores.length; i++)
-	{
-		this.cores[i].collected = false;
-		this.cores[i].visible = true;
-	}
+	this.resetCorePickups(0);
 
 	this.shipControls.reset(this.track.spawn, this.track.spawnRotation);
 	this.shipControls.active = false;
@@ -149,7 +152,7 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 	{
 		this.hud.resetTime();
 		this.hud.display("Contract uploaded", 1);
-		this.hud.updateLap(1, 1);
+		this.hud.updateLap(this.contract.level, this.contract.maxLevel);
 		this.hud.updateObjective(this.contract.delivered, this.contract.total);
 	}
 }
@@ -229,6 +232,38 @@ bkcore.hexgl.Gameplay.prototype.checkPoint = function()
 		return -1;
 }
 
+bkcore.hexgl.Gameplay.prototype.resetCorePickups = function(graceMs)
+{
+	graceMs = graceMs == undefined ? 0 : graceMs;
+	var graceUntil = graceMs > 0 ? this.timer.time.elapsed + graceMs : 0;
+	for(var i = 0; i < this.cores.length; i++)
+	{
+		this.cores[i].collected = false;
+		this.cores[i].visible = true;
+		this.cores[i].graceUntil = graceUntil;
+	}
+}
+
+bkcore.hexgl.Gameplay.prototype.advanceContractLevel = function()
+{
+	if(this.contract.level >= this.contract.maxLevel)
+		return false;
+
+	this.contract.level++;
+	this.contract.total = this.contract.levelTargets[this.contract.level - 1];
+	this.contract.deadline = this.contract.levelDeadlines[this.contract.level - 1];
+	this.resetCorePickups(2000);
+
+	if(this.hud != null)
+	{
+		this.hud.updateLap(this.contract.level, this.contract.maxLevel);
+		this.hud.updateObjective(this.contract.delivered, this.contract.total);
+		this.hud.display("Level " + this.contract.level + " contract uploaded", 1);
+	}
+
+	return true;
+}
+
 bkcore.hexgl.Gameplay.prototype.checkCorePickups = function()
 {
 	if(this.cores == undefined || this.cores.length == 0)
@@ -239,6 +274,8 @@ bkcore.hexgl.Gameplay.prototype.checkCorePickups = function()
 	{
 		var core = this.cores[i];
 		if(core.collected)
+			continue;
+		if(core.graceUntil != undefined && this.timer.time.elapsed < core.graceUntil)
 			continue;
 
 		if(shipPos.distanceTo(core.position) <= core.radius)
@@ -254,8 +291,15 @@ bkcore.hexgl.Gameplay.prototype.checkCorePickups = function()
 				this.lapTimes.push(t);
 				if(t <= this.contract.deadline)
 				{
-					this.hud != null && this.hud.display("All cores secured", 0.7);
-					this.end(this.results.FINISH);
+					if(this.advanceContractLevel())
+					{
+						return;
+					}
+					else
+					{
+						this.hud != null && this.hud.display("All levels secured", 0.7);
+						this.end(this.results.FINISH);
+					}
 				}
 				else
 				{

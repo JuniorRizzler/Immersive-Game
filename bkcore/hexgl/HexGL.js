@@ -194,6 +194,9 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 	{
 		var delivered = this.gameplay.contract != undefined ? this.gameplay.contract.delivered : 0;
 		var total = this.gameplay.contract != undefined ? this.gameplay.contract.total : 3;
+		var level = this.gameplay.contract != undefined ? this.gameplay.contract.level : 1;
+		var maxLevel = this.gameplay.contract != undefined ? this.gameplay.contract.maxLevel : 3;
+		var deadline = this.gameplay.contract != undefined ? this.gameplay.contract.deadline : 60000;
 		var timedOut = this.gameplay.contract != undefined ? this.gameplay.contract.timedOut : false;
 		var crashes = this.components.shipControls.crashCount || 0;
 		var rank = "FAILED";
@@ -203,30 +206,31 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 
 		if(timedOut)
 		{
-			nextTarget = "The grid collapsed after one minute. Collect all three cores before 1'00''.";
-			storyResult = "The delivery missed the one-minute relay window. The city grid overloaded, fires climbed the skyline, and the lower districts went dark.";
+			var deadlineTime = bkcore.Timer.msToTimeString(deadline);
+			nextTarget = "Level " + level + " relay window closed. Reach " + delivered + "/" + total + " cores before " + deadlineTime.m + "'" + deadlineTime.s + "''.";
+			storyResult = "The delivery missed the Level " + level + " relay window. The city grid overloaded, fires climbed the skyline, and the lower districts went dark.";
 		}
 
 		if(this.gameplay.result == this.gameplay.results.FINISH)
 		{
 			resultTitle = "Contract Complete";
-			if(f < 45000 && crashes <= 2)
+			if(f < 150000 && crashes <= 4)
 			{
 				rank = "S-RANK COURIER";
-				storyResult = "Perfect delivery. The three cores locked into the relays before the blackout wave hit, and the city stayed alive.";
-				nextTarget = "Elite clear. Next goal: beat 0'45'' with two crashes or fewer.";
+				storyResult = "Perfect delivery. All three relay levels locked before the blackout wave hit, and the city stayed alive.";
+				nextTarget = "Elite clear. Next goal: beat 2'30'' with four crashes or fewer.";
 			}
-			else if(f < 55000 && crashes <= 5)
+			else if(f < 170000 && crashes <= 8)
 			{
 				rank = "A-RANK RUNNER";
-				storyResult = "The cores arrived in time, but the grid took damage. Half the city flickered, then stabilized on emergency power.";
-				nextTarget = "Clean delivery. Next goal: reach S-Rank under 0'45''.";
+				storyResult = "All relay levels came online in time, but the grid took damage. Half the city flickered, then stabilized on emergency power.";
+				nextTarget = "Clean delivery. Next goal: reach S-Rank under 2'30''.";
 			}
 			else
 			{
 				rank = "CONTRACT CLEARED";
-				storyResult = "You saved the city, barely. The relays came online seconds before the lower grid melted down.";
-				nextTarget = "Next goal: reduce crashes and finish under 0'55''.";
+				storyResult = "You saved the city, barely. The final relay came online seconds before the lower grid melted down.";
+				nextTarget = "Next goal: reduce crashes and finish under 2'50''.";
 			}
 		}
 
@@ -234,7 +238,7 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 		this.gameover.style.display = "block";
 		this.document.getElementById("time").innerHTML = this.gameplay.result == this.gameplay.results.FINISH ? tf.m + "'" + tf.s + "''" + tf.ms : timedOut ? "Time Expired" : "Cargo Lost";
 		this.document.getElementById("result-title").innerHTML = resultTitle;
-		this.document.getElementById("contract-summary").innerHTML = storyResult + "<br>Pulse cores delivered: " + delivered + "/" + total + " &middot; Hull impacts: " + crashes;
+		this.document.getElementById("contract-summary").innerHTML = storyResult + "<br>Level: " + level + "/" + maxLevel + " &middot; Pulse cores delivered: " + delivered + "/" + total + " &middot; Hull impacts: " + crashes;
 		this.document.getElementById("rank-summary").innerHTML = rank + "<br>" + nextTarget;
 		this.containers.main.parentElement.style.display = "none";
 		return;
