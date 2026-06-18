@@ -613,8 +613,9 @@ bkcore.hexgl.ShipControls.prototype.update = function(dt)
 	this.rotation.y = this.angular;
 
 	this.speed = Math.max(0.0, Math.min(this.speed, this.maxSpeed));
-	if(this.gyroAssist && this.trackAssistBrake > 0.0)
-		this.speed *= (1.0 - Math.min(0.28, this.trackAssistBrake * 0.28));
+	if(this.gyroAssist && this.trackAssistBrake > 0.45 && this.speed > this.maxSpeed * 0.52)
+		this.speed -= this.airBrake * this.trackAssistBrake * 0.18 * dt;
+	this.speed = Math.max(0.0, Math.min(this.speed, this.maxSpeed));
 	this.speedRatio = this.speed / this.maxSpeed;
 	this.movement.z += this.speed * dt;
 
