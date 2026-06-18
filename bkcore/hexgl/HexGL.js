@@ -633,6 +633,30 @@ bkcore.hexgl.HexGL.prototype.tweakShipControls = function()
 		c.angularLerp = 0.4;
 	}
 
+	if(this.controlType == 4)
+	{
+		c.airResist = 0.018;
+		c.airDrift = 0.045;
+		c.thrust = 0.014;
+		c.airBrake = 0.018;
+		c.maxSpeed = 5.85;
+		c.boosterSpeed = c.maxSpeed * 0.32;
+		c.overdriveSpeed = c.maxSpeed * 0.26;
+		c.boosterDecay = 0.006;
+		c.angularSpeed = 0.0108;
+		c.airAngularSpeed = 0.0114;
+		c.rollAngle = 0.48;
+		c.shieldDamage = 0.022;
+		c.collisionSpeedDecrease = 0.93;
+		c.collisionSpeedDecreaseCoef = 0.18;
+		c.repulsionRatio = 0.22;
+		c.repulsionCap = 1.05;
+		c.repulsionLerp = 0.18;
+		c.driftLerp = 0.22;
+		c.angularLerp = 0.28;
+		c.rollLerp = 0.055;
+	}
+
 	if(this.godmode)
 		c.shieldDamage = 0.0;
 }

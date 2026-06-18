@@ -16,6 +16,7 @@ bkcore.hexgl.ShipControls = function(ctx)
 	this.active = true;
 	this.destroyed = false;
 	this.falling = false;
+	this.gyroAssist = ctx.controlType == 4;
 
 	this.dom = domElement;
 	this.mesh = null;
@@ -835,16 +836,16 @@ bkcore.hexgl.ShipControls.prototype.collisionCheck = function(dt)
 		else
 		{
 			//console.log(collision.r+"  --  "+fCol+"  @  "+lCol+"  /  "+rCol);
-			this.repulsionForce.z += -this.repulsionAmount*4;
+			this.repulsionForce.z += -this.repulsionAmount * (this.gyroAssist ? 1.7 : 4);
 			this.collision.front = true;
-			this.speed = 0;
+			this.speed *= this.gyroAssist ? 0.45 : 0;
 		}
 
 		// DIRTY GAMEOVER
 		if(rCol < 128 && lCol < 128)
 		{
 			var fCol = this.collisionMap.getPixel(Math.round(pos.x+2), Math.round(pos.z+2)).r;
-			if(fCol < 128)
+			if(fCol < 128 && !this.gyroAssist)
 			{
 				console.log('GAMEOVER');
 				this.fall();
