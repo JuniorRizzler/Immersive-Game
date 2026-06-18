@@ -17,6 +17,29 @@
       return 'DeviceOrientationEvent' in window;
     };
 
+    OrientationController.requestAccess = function(callback) {
+      if (!OrientationController.isCompatible()) {
+        if (typeof callback === "function") {
+          callback(false);
+        }
+        return;
+      }
+      if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        DeviceOrientationEvent.requestPermission().then(function(state) {
+          if (typeof callback === "function") {
+            callback(state === "granted");
+          }
+        })["catch"](function() {
+          if (typeof callback === "function") {
+            callback(false);
+          }
+        });
+      }
+      else if (typeof callback === "function") {
+        callback(true);
+      }
+    };
+
     /*
         Creates a new OrientationController
     
@@ -38,6 +61,9 @@
       this.dalpha = null;
       this.dbeta = null;
       this.dgamma = null;
+      this.steer = 0.0;
+      this.smoothSteer = 0.0;
+      this.deadZone = 0.025;
       this.touches = null;
       window.addEventListener('deviceorientation', (function(e) {
         return _this.orientationChange(e);
@@ -70,7 +96,24 @@
       this.alpha = event.alpha - this.dalpha;
       this.beta = event.beta - this.dbeta;
       this.gamma = event.gamma - this.dgamma;
+      this.steer = Math.max(-1.0, Math.min(1.0, this.gamma / 28));
+      if (Math.abs(this.steer) < this.deadZone) {
+        this.steer = 0.0;
+      }
+      this.smoothSteer += (this.steer - this.smoothSteer) * 0.28;
       return false;
+    };
+
+    OrientationController.prototype.getSteer = function() {
+      return this.smoothSteer;
+    };
+
+    OrientationController.prototype.calibrate = function() {
+      this.dalpha = null;
+      this.dbeta = null;
+      this.dgamma = null;
+      this.steer = 0.0;
+      this.smoothSteer = 0.0;
     };
 
     /*
