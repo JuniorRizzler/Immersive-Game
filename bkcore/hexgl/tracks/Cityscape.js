@@ -497,6 +497,32 @@ bkcore.hexgl.tracks.Cityscape = {
 		var startbanner = ctx.createMesh(scene, this.lib.get("geometries", "track.cityscape.start.banner"), 0, -5, 0, this.materials.startBanner);
 		startbanner.doubleSided = true;
 
+		// START-LINE REFILL STATION
+		var station = new THREE.Object3D();
+		station.position.set(this.spawn.x, this.spawn.y - 35, this.spawn.z + 80);
+		var stationPadMaterial = new THREE.MeshBasicMaterial({
+			color: 0x43dfff,
+			transparent: true,
+			opacity: 0.32,
+			wireframe: true,
+			blending: THREE.AdditiveBlending,
+			depthWrite: false
+		});
+		var stationCoreMaterial = new THREE.MeshBasicMaterial({
+			color: 0xff784d,
+			transparent: true,
+			opacity: 0.55,
+			blending: THREE.AdditiveBlending,
+			depthWrite: false
+		});
+		var stationPad = new THREE.Mesh(new THREE.CubeGeometry(240, 12, 170), stationPadMaterial);
+		var stationBeacon = new THREE.Mesh(new THREE.SphereGeometry(18, 10, 8), stationCoreMaterial);
+		stationBeacon.position.y = 60;
+		station.add(stationPad);
+		station.add(stationBeacon);
+		scene.add(station);
+		ctx.components.station = station;
+
 		// COURIER CONTRACT CORES
 		var coreMaterial = new THREE.MeshBasicMaterial({
 			color: 0x45dfff,
@@ -606,6 +632,13 @@ bkcore.hexgl.tracks.Cityscape = {
 						cores[i].scale.set(pulse, pulse, pulse);
 					}
 				}
+			}
+			var station = this.objects.components.station;
+			if(station != undefined)
+			{
+				var stationPulse = 1.0 + Math.sin(this.objects.time * 5.0) * 0.08;
+				station.rotation.y += 0.008 * dt;
+				station.scale.set(stationPulse, stationPulse, stationPulse);
 			}
 			/*this.objects.time += 0.002;
 			var c = this.objects.components.cameraChase.camera;

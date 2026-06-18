@@ -71,6 +71,9 @@
   };
 
   $('step-5').onclick = function() {
+    if (window.hexGL != null && window.hexGL.stationPromptActive) {
+      return window.hexGL.continueStation();
+    }
     return window.location.reload();
   };
 

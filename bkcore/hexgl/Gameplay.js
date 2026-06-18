@@ -62,6 +62,8 @@ bkcore.hexgl.Gameplay = function(opts)
 	this.score = null;
 	this.finishTime = null;
 	this.onFinish = opts.onFinish == undefined ? function(){console.log("FINISH");} : opts.onFinish;
+	this.onStation = opts.onStation == undefined ? function(){} : opts.onStation;
+	this.stationStartedAt = 0;
 
 	this.raceData = null;
 
@@ -264,6 +266,50 @@ bkcore.hexgl.Gameplay.prototype.advanceContractLevel = function()
 	return true;
 }
 
+bkcore.hexgl.Gameplay.prototype.enterStation = function()
+{
+	this.step = 50;
+	this.stationStartedAt = (new Date).getTime();
+	this.timer.pause(true);
+
+	this.shipControls.active = false;
+	this.shipControls.reset(this.track.spawn, this.track.spawnRotation);
+	this.shipControls.overdrive = this.shipControls.overdriveMax;
+	this.shipControls.overdriveActive = false;
+	this.shipControls.shield = this.shipControls.maxShield;
+
+	if(this.hud != null)
+	{
+		this.hud.updateObjective(this.contract.delivered, this.contract.total);
+		this.hud.display("Station docked", 1);
+	}
+
+	this.onStation.call(this);
+}
+
+bkcore.hexgl.Gameplay.prototype.continueFromStation = function()
+{
+	if(this.step != 50)
+		return false;
+
+	var now = (new Date).getTime();
+	this.timer.time.start += now - this.stationStartedAt;
+	this.timer.time.current = now;
+	this.timer.time.previous = now;
+	this.timer.pause(false);
+
+	if(!this.advanceContractLevel())
+		return false;
+
+	this.step = 4;
+	this.shipControls.active = this.mode != "replay";
+
+	if(this.hud != null)
+		this.hud.display("Launch Level " + this.contract.level, 1);
+
+	return true;
+}
+
 bkcore.hexgl.Gameplay.prototype.checkCorePickups = function()
 {
 	if(this.cores == undefined || this.cores.length == 0)
@@ -291,8 +337,9 @@ bkcore.hexgl.Gameplay.prototype.checkCorePickups = function()
 				this.lapTimes.push(t);
 				if(t <= this.contract.deadline)
 				{
-					if(this.advanceContractLevel())
+					if(this.contract.level < this.contract.maxLevel)
 					{
+						this.enterStation();
 						return;
 					}
 					else

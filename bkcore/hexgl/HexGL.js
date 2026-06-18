@@ -71,6 +71,7 @@ bkcore.hexgl.HexGL = function(opts)
 	this.hud = null;
 
 	this.gameplay = null;
+	this.stationPromptActive = false;
 
 	this.composers = {
 		game: null
@@ -166,6 +167,9 @@ bkcore.hexgl.HexGL.prototype.initGameplay = function()
 		analyser: this.track.analyser,
 		pixelRatio: this.track.pixelRatio,
 		track: this.track,
+		onStation: function() {
+			self.displayStationPrompt();
+		},
 		onFinish: function() {
 			self.components.shipControls.terminate();
 			self.displayScore(this.finishTime, this.lapTimes);
@@ -173,15 +177,48 @@ bkcore.hexgl.HexGL.prototype.initGameplay = function()
 	});
 
 	this.gameplay.start();
+	this.manager.get('game').objects.gameplay = this.gameplay;
 
 	bkcore.Audio.play('bg');
 	bkcore.Audio.play('wind');
 	bkcore.Audio.volume('wind', 0.35);
 }
 
+bkcore.hexgl.HexGL.prototype.displayStationPrompt = function()
+{
+	if(this.gameover === null)
+		return;
+
+	var nextLevel = this.gameplay.contract.level + 1;
+	var maxLevel = this.gameplay.contract.maxLevel;
+	var nextTarget = this.gameplay.contract.levelTargets[nextLevel - 1];
+	var deadline = bkcore.Timer.msToTimeString(this.gameplay.contract.levelDeadlines[nextLevel - 1]);
+
+	this.stationPromptActive = true;
+	this.gameover.className = "result-station";
+	this.gameover.style.display = "block";
+	this.document.getElementById("time").innerHTML = "Station Docked";
+	this.document.getElementById("result-title").innerHTML = "Relay Level " + this.gameplay.contract.level + " Secured";
+	this.document.getElementById("contract-summary").innerHTML = "The ship has returned to the start-line service station. Hull integrity and overdrive cells are refilled before the next city relay opens.";
+	this.document.getElementById("rank-summary").innerHTML = "Continue to Level " + nextLevel + "/" + maxLevel + ": deliver " + nextTarget + " total cores before " + deadline.m + "'" + deadline.s + "''.";
+	this.document.querySelector("#step-5 #ctrl-help").innerHTML = "Click/Touch to launch Level " + nextLevel;
+}
+
+bkcore.hexgl.HexGL.prototype.continueStation = function()
+{
+	if(!this.stationPromptActive || this.gameplay == null)
+		return false;
+
+	this.stationPromptActive = false;
+	this.gameover.style.display = "none";
+	this.document.querySelector("#step-5 #ctrl-help").innerHTML = "Click/Touch to continue.";
+	return this.gameplay.continueFromStation();
+}
+
 bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 {
 	this.active = false;
+	this.stationPromptActive = false;
 
 	var tf = bkcore.Timer.msToTimeString(f);
 	var tl = [
@@ -246,6 +283,7 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 
 		this.gameover.className = this.gameplay.result == this.gameplay.results.FINISH ? "result-success" : "result-failure";
 		this.gameover.style.display = "block";
+		this.document.querySelector("#step-5 #ctrl-help").innerHTML = "Click/Touch to continue.";
 		this.document.getElementById("time").innerHTML = this.gameplay.result == this.gameplay.results.FINISH ? tf.m + "'" + tf.s + "''" + tf.ms : timedOut ? "Time Expired" : "Cargo Lost";
 		this.document.getElementById("result-title").innerHTML = resultTitle;
 		this.document.getElementById("contract-summary").innerHTML = storyResult + "<br>Level: " + level + "/" + maxLevel + " &middot; Pulse cores delivered: " + delivered + "/" + total + " &middot; Hull impacts: " + crashes;
