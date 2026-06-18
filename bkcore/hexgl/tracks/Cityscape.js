@@ -421,6 +421,39 @@ bkcore.hexgl.tracks.Cityscape = {
 		if(quality > 0)
 			ship.add(boosterLight);
 
+		// PREVIOUS RUN GHOST
+		var ghostMaterial = new THREE.MeshBasicMaterial({
+			color: 0x72eaff,
+			transparent: true,
+			opacity: 0.26,
+			wireframe: true,
+			blending: THREE.AdditiveBlending,
+			depthWrite: false
+		});
+		var ghostShip = ctx.createMesh(scene, this.lib.get("geometries", "ship.feisar"), -1134*2, 10, -443*2, ghostMaterial);
+		ghostShip.useQuaternion = true;
+		ghostShip.visible = false;
+		ghostShip.seek = 0;
+		ghostShip.ghostData = null;
+		ghostShip.ghostP = new THREE.Vector3();
+		ghostShip.ghostPP = new THREE.Vector3();
+		ghostShip.ghostNP = new THREE.Vector3();
+		ghostShip.ghostQ = new THREE.Quaternion();
+		ghostShip.ghostPQ = new THREE.Quaternion();
+		ghostShip.ghostNQ = new THREE.Quaternion();
+		if(typeof(Storage) !== "undefined")
+		{
+			try {
+				var ghostData = JSON.parse(localStorage['pulse-rush-ghost'] || "[]");
+				if(ghostData != undefined && ghostData.length > 2)
+					ghostShip.ghostData = ghostData;
+			}
+			catch(e) {
+				ghostShip.ghostData = null;
+			}
+		}
+		ctx.components.ghostShip = ghostShip;
+
 		// SHIP CONTROLS
 		var shipControls = new bkcore.hexgl.ShipControls(ctx);
 		shipControls.collisionMap = this.lib.get("analysers", "track.cityscape.collision");
@@ -522,6 +555,39 @@ bkcore.hexgl.tracks.Cityscape = {
 			this.objects.components.shipControls.update(dt);
 
 			this.objects.components.shipEffects.update(dt);
+
+			var ghost = this.objects.components.ghostShip;
+			var gameplay = this.objects.gameplay;
+			if(ghost != undefined && ghost.ghostData != undefined && gameplay != undefined && gameplay.step == 4)
+			{
+				var gd = ghost.ghostData;
+				var gt = gameplay.timer.time.elapsed;
+				while(ghost.seek < gd.length - 2 && gd[ghost.seek + 1][0] < gt)
+					ghost.seek++;
+
+				var prev = gd[ghost.seek];
+				var next = gd[Math.min(ghost.seek + 1, gd.length - 1)];
+				if(prev != undefined && next != undefined)
+				{
+					var span = Math.max(1, next[0] - prev[0]);
+					var mix = Math.max(0, Math.min(1, (gt - prev[0]) / span));
+					ghost.ghostPP.set(prev[1], prev[2], prev[3]);
+					ghost.ghostNP.set(next[1], next[2], next[3]);
+					ghost.ghostP.copy(ghost.ghostPP).lerpSelf(ghost.ghostNP, mix);
+					ghost.position.copy(ghost.ghostP);
+
+					ghost.ghostPQ.set(prev[4], prev[5], prev[6], prev[7]);
+					ghost.ghostNQ.set(next[4], next[5], next[6], next[7]);
+					ghost.ghostQ.copy(ghost.ghostPQ).slerpSelf(ghost.ghostNQ, mix);
+					ghost.quaternion.copy(ghost.ghostQ);
+					ghost.visible = true;
+				}
+			}
+			else if(ghost != undefined)
+			{
+				ghost.visible = false;
+				ghost.seek = 0;
+			}
 
 			this.objects.components.cameraChase.update(dt, this.objects.components.shipControls.getSpeedRatio());
 			this.objects.time += 0.002 * dt;

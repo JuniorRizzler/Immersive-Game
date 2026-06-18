@@ -192,6 +192,16 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 
 	if(this.gameover !== null)
 	{
+		if(typeof(Storage) !== "undefined" && this.gameplay.raceData != undefined)
+		{
+			try {
+				localStorage['pulse-rush-ghost'] = JSON.stringify(this.gameplay.raceData.export());
+			}
+			catch(e) {
+				console.warn("Unable to save ghost run.");
+			}
+		}
+
 		var delivered = this.gameplay.contract != undefined ? this.gameplay.contract.delivered : 0;
 		var total = this.gameplay.contract != undefined ? this.gameplay.contract.total : 3;
 		var level = this.gameplay.contract != undefined ? this.gameplay.contract.level : 1;
