@@ -73,10 +73,27 @@
   $('step-5').onclick = function(event) {
     if (window.hexGL != null && window.hexGL.stationPromptActive) {
       event != null && event.preventDefault();
-      window.hexGL.continueStation();
       return false;
     }
     return window.location.reload();
+  };
+
+  $('station-continue').onclick = function(event) {
+    event != null && event.stopPropagation();
+    event != null && event.preventDefault();
+    if (window.hexGL != null) {
+      window.hexGL.continueStation();
+    }
+    return false;
+  };
+
+  $('station-stop').onclick = function(event) {
+    event != null && event.stopPropagation();
+    event != null && event.preventDefault();
+    if (window.hexGL != null) {
+      window.hexGL.stopStation();
+    }
+    return false;
   };
 
   $('s-credits').onclick = function() {

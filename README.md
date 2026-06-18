@@ -15,7 +15,7 @@ Original project: https://github.com/BKcore/HexGL
   - The player is delivering three pulse cores through a failing city grid.
   - Three glowing blue orb cores respawn across three relay levels.
   - Level 1 requires 3 cores before 1:00, Level 2 requires 6 total cores before 2:00, and Level 3 requires 9 total cores before 3:00.
-  - Between relay levels, the player must return to the start-line refill station after the required cores are collected; docking restores hull health and overdrive before the player chooses to continue.
+  - Between relay levels, the player must return to the start-line refill station after the required cores are collected; docking gradually restores hull health and overdrive, then lets the player continue or stop and bank the secured relay.
   - The HUD tracks `CORES 0/3` progress.
   - The finish screen now gives a story consequence, contract result, delivered core count, crash count, rank, and next target.
 - Added a lightweight ghost run:

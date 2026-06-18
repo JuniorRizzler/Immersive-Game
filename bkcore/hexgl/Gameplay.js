@@ -58,6 +58,7 @@ bkcore.hexgl.Gameplay = function(opts)
 		deadline: 60000,
 		timedOut: false,
 		awaitingStation: false,
+		stoppedAtStation: false,
 		stationRadius: 360,
 		collected: {}
 	};
@@ -123,6 +124,7 @@ bkcore.hexgl.Gameplay.prototype.start = function(opts)
 	this.contract.deadline = this.contract.levelDeadlines[0];
 	this.contract.timedOut = false;
 	this.contract.awaitingStation = false;
+	this.contract.stoppedAtStation = false;
 	this.contract.collected = {};
 	this.resetCorePickups(0);
 
@@ -338,6 +340,16 @@ bkcore.hexgl.Gameplay.prototype.continueFromStation = function()
 	if(this.hud != null)
 		this.hud.display("Launch Level " + this.contract.level, 1);
 
+	return true;
+}
+
+bkcore.hexgl.Gameplay.prototype.stopAtStation = function()
+{
+	if(this.step != 50)
+		return false;
+
+	this.contract.stoppedAtStation = true;
+	this.end(this.results.FINISH);
 	return true;
 }
 

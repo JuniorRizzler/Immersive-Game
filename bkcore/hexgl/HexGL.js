@@ -72,6 +72,8 @@ bkcore.hexgl.HexGL = function(opts)
 
 	this.gameplay = null;
 	this.stationPromptActive = false;
+	this.stationPromptReady = false;
+	this.stationPromptTimer = null;
 
 	this.composers = {
 		game: null
@@ -189,38 +191,79 @@ bkcore.hexgl.HexGL.prototype.displayStationPrompt = function()
 	if(this.gameover === null)
 		return;
 
+	var self = this;
 	var nextLevel = this.gameplay.contract.level + 1;
 	var maxLevel = this.gameplay.contract.maxLevel;
 	var nextTarget = this.gameplay.contract.levelTargets[nextLevel - 1];
 	var deadline = bkcore.Timer.msToTimeString(this.gameplay.contract.levelDeadlines[nextLevel - 1]);
 
 	this.stationPromptActive = true;
+	this.stationPromptReady = false;
+	if(this.stationPromptTimer != null)
+		clearTimeout(this.stationPromptTimer);
 	this.gameover.className = "result-station";
 	this.gameover.style.display = "block";
 	this.document.getElementById("time").innerHTML = "Station Docked";
 	this.document.getElementById("result-title").innerHTML = "Relay Level " + this.gameplay.contract.level + " Secured";
-	this.document.getElementById("contract-summary").innerHTML = "The ship has returned to the start-line service station. Hull integrity and overdrive cells are refilled before the next city relay opens.";
-	this.document.getElementById("rank-summary").innerHTML = "Continue to Level " + nextLevel + "/" + maxLevel + ": deliver " + nextTarget + " total cores before " + deadline.m + "'" + deadline.s + "''.";
-	this.document.querySelector("#step-5 #ctrl-help").innerHTML = "Click/Touch to launch Level " + nextLevel;
+	this.document.getElementById("contract-summary").innerHTML = "Docking clamps locked. Refilling hull integrity and overdrive cells before the next city relay opens.";
+	this.document.getElementById("rank-summary").innerHTML = "Stand by for station release.";
+	this.document.getElementById("station-actions").style.display = "none";
+	this.document.getElementById("station-continue").innerHTML = "Continue Level " + nextLevel;
+	this.document.getElementById("station-stop").innerHTML = "Stop Here";
+	this.document.querySelector("#step-5 #ctrl-help").innerHTML = "Refilling...";
+	this.stationPromptTimer = setTimeout(function() {
+		if(!self.stationPromptActive)
+			return;
+		self.stationPromptReady = true;
+		self.document.getElementById("contract-summary").innerHTML = "Station service complete. Hull integrity and overdrive are full.";
+		self.document.getElementById("rank-summary").innerHTML = "Continue to Level " + nextLevel + "/" + maxLevel + ": deliver " + nextTarget + " total cores before " + deadline.m + "'" + deadline.s + "''. Or stop here and bank the secured relay.";
+		self.document.getElementById("station-actions").style.display = "flex";
+		self.document.querySelector("#step-5 #ctrl-help").innerHTML = "Choose the next contract move.";
+	}, 950);
 }
 
 bkcore.hexgl.HexGL.prototype.continueStation = function()
 {
-	if(!this.stationPromptActive || this.gameplay == null)
+	if(!this.stationPromptActive || !this.stationPromptReady || this.gameplay == null)
+		return false;
+
+	if(!this.gameplay.continueFromStation())
 		return false;
 
 	this.stationPromptActive = false;
+	this.stationPromptReady = false;
 	this.gameover.style.display = "none";
 	this.active = true;
 	this.containers.main.parentElement.style.display = "block";
+	this.document.getElementById("station-actions").style.display = "none";
 	this.document.querySelector("#step-5 #ctrl-help").innerHTML = "Click/Touch to continue.";
-	return this.gameplay.continueFromStation();
+	return true;
+}
+
+bkcore.hexgl.HexGL.prototype.stopStation = function()
+{
+	if(!this.stationPromptActive || !this.stationPromptReady || this.gameplay == null)
+		return false;
+
+	if(!this.gameplay.stopAtStation())
+		return false;
+
+	this.stationPromptActive = false;
+	this.stationPromptReady = false;
+	this.gameover.style.display = "none";
+	this.active = true;
+	this.containers.main.parentElement.style.display = "block";
+	this.document.getElementById("station-actions").style.display = "none";
+	this.document.querySelector("#step-5 #ctrl-help").innerHTML = "Click/Touch to continue.";
+	return true;
 }
 
 bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 {
 	this.active = false;
 	this.stationPromptActive = false;
+	this.stationPromptReady = false;
+	this.document.getElementById("station-actions").style.display = "none";
 
 	var tf = bkcore.Timer.msToTimeString(f);
 	var tl = [
@@ -251,6 +294,7 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 		var maxLevel = this.gameplay.contract != undefined ? this.gameplay.contract.maxLevel : 3;
 		var deadline = this.gameplay.contract != undefined ? this.gameplay.contract.deadline : 60000;
 		var timedOut = this.gameplay.contract != undefined ? this.gameplay.contract.timedOut : false;
+		var stoppedAtStation = this.gameplay.contract != undefined ? this.gameplay.contract.stoppedAtStation : false;
 		var crashes = this.components.shipControls.crashCount || 0;
 		var rank = "FAILED";
 		var resultTitle = "Contract Failed";
@@ -264,7 +308,14 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 			storyResult = "The delivery missed the Level " + level + " relay window. The city grid overloaded, fires climbed the skyline, and the lower districts went dark.";
 		}
 
-		if(this.gameplay.result == this.gameplay.results.FINISH)
+		if(stoppedAtStation)
+		{
+			resultTitle = "Run Banked";
+			rank = "STATION SECURED";
+			storyResult = "You locked the current relay and returned to the station with the ship intact. The city gained time, but the remaining relays are still waiting.";
+			nextTarget = "Banked at Level " + level + "/" + maxLevel + ". Restart to push deeper into the relay chain.";
+		}
+		else if(this.gameplay.result == this.gameplay.results.FINISH)
 		{
 			resultTitle = "Contract Complete";
 			if(f < 150000 && crashes <= 4)
