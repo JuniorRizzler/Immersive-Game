@@ -425,16 +425,19 @@ bkcore.hexgl.tracks.Cityscape = {
 		var ghostMaterial = new THREE.MeshBasicMaterial({
 			color: 0x72eaff,
 			transparent: true,
-			opacity: 0.26,
+			opacity: 0.58,
 			wireframe: true,
 			blending: THREE.AdditiveBlending,
-			depthWrite: false
+			depthWrite: false,
+			depthTest: false
 		});
 		var ghostShip = ctx.createMesh(scene, this.lib.get("geometries", "ship.feisar"), -1134*2, 10, -443*2, ghostMaterial);
 		ghostShip.useQuaternion = true;
 		ghostShip.visible = false;
+		ghostShip.scale.set(1.45, 1.45, 1.45);
 		ghostShip.seek = 0;
 		ghostShip.ghostData = null;
+		ghostShip.ghostTrail = null;
 		ghostShip.ghostP = new THREE.Vector3();
 		ghostShip.ghostPP = new THREE.Vector3();
 		ghostShip.ghostNP = new THREE.Vector3();
@@ -446,7 +449,36 @@ bkcore.hexgl.tracks.Cityscape = {
 			try {
 				var ghostData = JSON.parse(localStorage['pulse-rush-ghost'] || "[]");
 				if(ghostData != undefined && ghostData.length > 2)
+				{
 					ghostShip.ghostData = ghostData;
+					var ghostTrailGeometry = new THREE.Geometry();
+					var ghostTrailStep = Math.max(1, Math.floor(ghostData.length / 260));
+					for(var gi = 0; gi < ghostData.length; gi += ghostTrailStep)
+					{
+						ghostTrailGeometry.vertices.push(new THREE.Vector3(
+							ghostData[gi][1],
+							ghostData[gi][2] + 18,
+							ghostData[gi][3]
+						));
+					}
+					var lastGhostPoint = ghostData[ghostData.length - 1];
+					ghostTrailGeometry.vertices.push(new THREE.Vector3(
+						lastGhostPoint[1],
+						lastGhostPoint[2] + 18,
+						lastGhostPoint[3]
+					));
+					var ghostTrailMaterial = new THREE.LineBasicMaterial({
+						color: 0x72eaff,
+						transparent: true,
+						opacity: 0.72,
+						blending: THREE.AdditiveBlending,
+						depthWrite: false,
+						depthTest: false
+					});
+					ghostShip.ghostTrail = new THREE.Line(ghostTrailGeometry, ghostTrailMaterial);
+					ghostShip.ghostTrail.visible = false;
+					scene.add(ghostShip.ghostTrail);
+				}
 			}
 			catch(e) {
 				ghostShip.ghostData = null;
@@ -607,12 +639,16 @@ bkcore.hexgl.tracks.Cityscape = {
 					ghost.ghostQ.copy(ghost.ghostPQ).slerpSelf(ghost.ghostNQ, mix);
 					ghost.quaternion.copy(ghost.ghostQ);
 					ghost.visible = true;
+					if(ghost.ghostTrail != undefined)
+						ghost.ghostTrail.visible = true;
 				}
 			}
 			else if(ghost != undefined)
 			{
 				ghost.visible = false;
 				ghost.seek = 0;
+				if(ghost.ghostTrail != undefined)
+					ghost.ghostTrail.visible = false;
 			}
 
 			this.objects.components.cameraChase.update(dt, this.objects.components.shipControls.getSpeedRatio());

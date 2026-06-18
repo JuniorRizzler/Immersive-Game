@@ -232,7 +232,11 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 		if(typeof(Storage) !== "undefined" && this.gameplay.raceData != undefined)
 		{
 			try {
-				localStorage['pulse-rush-ghost'] = JSON.stringify(this.gameplay.raceData.export());
+				var ghostRun = this.gameplay.raceData.export();
+				var shouldSaveGhost = this.gameplay.result == this.gameplay.results.FINISH;
+				var previousGhost = JSON.parse(localStorage['pulse-rush-ghost'] || "[]");
+				if(shouldSaveGhost || previousGhost.length < 20)
+					localStorage['pulse-rush-ghost'] = JSON.stringify(ghostRun);
 			}
 			catch(e) {
 				console.warn("Unable to save ghost run.");

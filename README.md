@@ -20,7 +20,7 @@ Original project: https://github.com/BKcore/HexGL
   - The finish screen now gives a story consequence, contract result, delivered core count, crash count, rank, and next target.
 - Added a lightweight ghost run:
   - The browser saves the latest run locally.
-  - The next run shows a translucent blue ship following that previous path.
+  - The next run shows a bright blue ghost ship and glowing route line following that previous path.
 - Added an overdrive mechanic:
   - Drift with `Q`/`A` or `E`/`D` while moving to charge overdrive.
   - Hold `Space` to spend overdrive for a stabilized speed surge.
